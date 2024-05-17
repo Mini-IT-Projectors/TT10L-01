@@ -2,4 +2,21 @@
 
 <p>This is my first webpage!!!</p>
 
-<p>Isn't This cool</p>
+<p>My name is {{ first_name }} </p>
+
+<p>{{ stuff|safe }}</p>
+
+<h3>Favorite Pizza:</h3>
+
+{% for pizza in favorite_pizza %}
+    {% if topping==41%}
+        {{ topping + 100}}<br/>
+    {% else %}
+        {{ topping }}<br/>
+    {% endif %}
+
+
+{% endfor %}
+
+<br/><br/>
+{{ favorite_pizza.0 }}
