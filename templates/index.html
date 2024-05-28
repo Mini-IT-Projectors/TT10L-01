@@ -1,27 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Hello World</h1>
+<div class="homepage">
+    <div class="homepage-left">
+        <h3>Favorite Pizza:</h3>
 
-    <p>This is my first webpage!!!</p>
+        {% for pizza in favorite_pizza %}
+            {% if topping==41%}
+                {{ topping + 100}}<br/>
+            {% else %}
+                {{ topping }}<br/>
+            {% endif %}
 
-    <p>My name is {{ first_name }} </p>
+        {% endfor %}
 
-    <p>{{ stuff|safe }}</p>
+        <br/><br/>
+        {{ favorite_pizza.0 }}
+    </div>
+    <div class="homepage-right">
+        <h1>WELCOME, NAME!!</h1>
+        
 
-    <h3>Favorite Pizza:</h3>
+        <p>Groups 0</p>
 
-    {% for pizza in favorite_pizza %}
-        {% if topping==41%}
-            {{ topping + 100}}<br/>
-        {% else %}
-            {{ topping }}<br/>
-        {% endif %}
+        <p>My name is {{ first_name }} </p>
 
-
-    {% endfor %}
-
-    <br/><br/>
-    {{ favorite_pizza.0 }}
+        <p>{{ stuff|safe }}</p>
+    </div>
+</div>
 
 {% endblock %}

@@ -1,0 +1,14 @@
+h1{
+    color: red;
+}
+
+.homepage{
+    display: flex;
+}
+.homepage-right{
+    margin-right: 0;
+}
+.homepage-left{
+    margin-left: 0;
+}
+
