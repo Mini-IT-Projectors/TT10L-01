@@ -15,7 +15,7 @@
     height:700px;
 }
 
-.navigation img{
+.not-top-navigation img{
     padding: 30px 10px 0px;
     width: 60px;
 }
@@ -25,15 +25,20 @@
     text-align: center;
     font-size: 8px;
 }
+.user-image{
+    padding: 10px 10px 0px;
+    width: 60px;
+}
 
 .bottom-navigation{
-    padding-top: 130px;
+    padding-top: 150px;
 }
 h1{
     color: red;
 }
 
-.homepage{
+.homepage,.user{
+    margin: 5px 0 0 90px;
     display: flex;
 }
 .homepage-right{

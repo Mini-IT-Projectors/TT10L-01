@@ -10,10 +10,9 @@ users = []
 def index():
     if request.method == "POST":
         name = request.form.get("name")
-        email = request.form.get("email")
         group = request.form.get("group")
         subject = request.form.get("subject")
-        users.append({"name": name, "email": email, "group": group, "subject": subject})
+        users.append({"name": name, "group": group, "subject": subject})
      
     return render_template("csv.html", csv_data=users)
  
@@ -23,9 +22,9 @@ def generate_csv():
         return "No data to generate CSV."
  
     # Create a CSV string from the user data
-    csv_data = "Name,Email,Group,Subject\n"
+    csv_data = "Name,Group,Subject\n"
     for user in users:
-        csv_data += f"{user['name']},{user['email']},{user['group']},{user['subject']}\n"
+        csv_data += f"{user['name']},{user['group']},{user['subject']}\n"
  
     return render_template("index.html", csv_data=csv_data)
  
@@ -35,9 +34,9 @@ def download_csv():
         return "No data to download."
  
     # Create a CSV string from the user data
-    csv_data = "Name,Email,Group,Subject\n"
+    csv_data = "Name,Group,Subject\n"
     for user in users:
-        csv_data += f"{user['name']},{user['email']},{user['group']},{user['subject']}\n"
+        csv_data += f"{user['name']},{user['group']},{user['subject']}\n"
  
     # Create a temporary CSV file and serve it for download
     with open("users.csv", "w") as csv_file:
@@ -51,9 +50,9 @@ def download_csv_direct():
         return "No data to download."
  
     # Create a CSV string from the user data
-    csv_data = "Name,Email,Group,Subject\n"
+    csv_data = "Name,Group,Subject\n"
     for user in users:
-        csv_data += f"{user['name']},{user['email']},{user['group']},{user['subject']}\n"
+        csv_data += f"{user['name']},{user['group']},{user['subject']}\n"
  
     # Create a direct download response with the CSV data and appropriate headers
     response = Response(csv_data, content_type="text/csv")

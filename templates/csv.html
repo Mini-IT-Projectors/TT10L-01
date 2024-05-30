@@ -7,22 +7,15 @@
 </head>
 <body>
     <h1>Add Student</h1>
-    <form method="POST" action="/">
+    <form method="POST">
         <label for="name">Name:</label>
         <input type="text" name="name" id="name" required><br>
-
-        <label for="email">Email:</label>
-        <input type="email" name="email" id="email" required><br>
-
         <label for="group">Group:</label>
         <input type="text" name="group" id="group" required><br>
-
         <label for="subject">Subject:</label>
         <input type="text" name="subject" id="subject" required><br>
- 
-        <input type="submit" value="Generate CSV">
+        <input type="submit" value="Submit">
     </form>
- 
     {% if csv_data %}
     <a href="/download_csv">
         <button>Download CSV</button>
