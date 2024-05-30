@@ -1,3 +1,4 @@
+import csv
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
@@ -11,6 +12,14 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+def check_user(username, password):
+    with open('users.csv', mode='r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            if row['username'] == username and row['password'] == password:
+                return True
+    return False
+
 @app.route('/')
 def home():
     return render_template('index.html', title='Peer Review System')
@@ -21,7 +30,7 @@ def login():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        if username == 'admin' and password == 'password':
+        if check_user(username, password):
             flash('Login successful!', 'success')
             return redirect(url_for('home'))
         else:
