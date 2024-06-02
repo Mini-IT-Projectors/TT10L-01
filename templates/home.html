@@ -3,7 +3,8 @@
 <center>
     <h1>Home</h1>
     <p>Welcome to the Peer Review System!</p>
-    <a href="{{ url_for('login') }}">Login</a>
+    <a href="{{ url_for('login_user') }}">Login as User</a>
+    <a href="{{ url_for('login_admin') }}">Login as Admin</a>
 </center>
 
 {% endblock %}

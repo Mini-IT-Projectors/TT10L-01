@@ -17,7 +17,8 @@ class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
-    
+
+#Read Student Name    
 def check_user(username, password):
     if not os.path.exists('users.csv'):
         return False
@@ -27,13 +28,24 @@ def check_user(username, password):
             if row['username'] == username and row['password'] == password:
                 return True
     return False
-# Create a route decorator
+
+#Read Admin Name
+def check_admin(username, password):
+    if not os.path.exists('admin.csv'):
+        return False
+    with open('admin.csv', mode='r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            if row['username'] == username and row['password'] == password:
+                return True
+    return False
+
 @app.route('/')
 def home():
     return render_template('home.html', title='Peer Review System')
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
+@app.route('/user_login', methods=['GET', 'POST'])
+def login_user():
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -44,7 +56,21 @@ def login():
             return redirect(url_for('index'))
         else:
             flash('Invalid username or password', 'danger')
-    return render_template('login.html', title='Login', form=form)
+    return render_template('login_user.html', title='Login', form=form)
+
+@app.route('/admin_login', methods=['GET', 'POST'])
+def login_admin():
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        if check_admin(username, password):
+            flash('Login successful!', 'success')
+            session['username'] = username
+            return redirect(url_for('index'))
+        else:
+            flash('Invalid username or password', 'danger')
+    return render_template('login_admin.html', title='Login', form=form)
 
 @app.route('/home')
 def index(): 

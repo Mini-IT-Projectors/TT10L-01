@@ -2,7 +2,7 @@
 <br/>
 <center>
     <h1>{{ title }}</h1>
-    <form method="POST" action="{{ url_for('login') }}">
+    <form method="POST" action="{{ url_for('login_user') }}">
         {{ form.hidden_tag() }}
         <div>
             {{ form.username.label }}<br>
