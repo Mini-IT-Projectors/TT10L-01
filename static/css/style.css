@@ -30,6 +30,9 @@
     padding: 10px 10px 0px;
     width: 60px;
 }
+.user-image h3{
+    text-transform: uppercase;
+}
 
 .bottom-navigation{
     padding-top: 150px;

@@ -53,10 +53,23 @@ def login_user():
         if check_user(username, password):
             flash('Login successful!', 'success')
             session['username'] = username
-            return redirect(url_for('index'))
+            return redirect(url_for('index_user'))
         else:
             flash('Invalid username or password', 'danger')
     return render_template('login_user.html', title='Login', form=form)
+
+@app.route('/user/home')
+def index_user(): 
+    first_name = "Akmal"
+    stuff = "This is <strong>Bold</strong> Text"
+    
+    favorite_pizza = ["Pepperoni", "Cheese", "Mushroom", 41]
+    username = session.get('username')
+    return render_template("index_user.html",
+                           first_name = first_name,
+                           stuff=stuff,
+                           favorite_pizza=favorite_pizza,
+                           username=username)
 
 @app.route('/admin_login', methods=['GET', 'POST'])
 def login_admin():
@@ -67,19 +80,19 @@ def login_admin():
         if check_admin(username, password):
             flash('Login successful!', 'success')
             session['username'] = username
-            return redirect(url_for('index'))
+            return redirect(url_for('index_admin'))
         else:
             flash('Invalid username or password', 'danger')
     return render_template('login_admin.html', title='Login', form=form)
 
-@app.route('/home')
-def index(): 
+@app.route('/admin/home')
+def index_admin(): 
     first_name = "Akmal"
     stuff = "This is <strong>Bold</strong> Text"
     
     favorite_pizza = ["Pepperoni", "Cheese", "Mushroom", 41]
     username = session.get('username')
-    return render_template("index.html",
+    return render_template("index_admin.html",
                            first_name = first_name,
                            stuff=stuff,
                            favorite_pizza=favorite_pizza,
