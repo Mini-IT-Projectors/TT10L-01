@@ -20,12 +20,13 @@
     width: 60px;
 }
 
-.navigation p,.navigation h3{
+.navigation p,.navigation h3,.navigation a{
     padding-top: 5px;
     text-align: center;
     font-size: 8px;
 }
-.user-image{
+.user-image,.navigation a{
+    align-items: center;
     padding: 10px 10px 0px;
     width: 60px;
 }
