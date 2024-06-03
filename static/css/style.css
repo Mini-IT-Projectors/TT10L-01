@@ -41,9 +41,9 @@ h1{
     color: red;
 }
 
-.homepage,.user{
+.homepage,.user,.create-group{
     margin: 5px 0 0 90px;
-    display: flex;
+    
 }
 .homepage-right{
     margin-right: 0;

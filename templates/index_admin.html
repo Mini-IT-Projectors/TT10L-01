@@ -3,29 +3,26 @@
 {% block content %}
 <div class="homepage">
     <div class="homepage-left">
-        <h3>Favorite Pizza:</h3>
-
-        {% for topping in favorite_pizza %}
-            {% if topping==41%}
-                {{ topping + 100}}<br/>
-            {% else %}
-                {{ topping }}<br/>
-            {% endif %}
-
-        {% endfor %}
-
-        <br/><br/>
-        {{ favorite_pizza.1 }}
-    </div>
-    <div class="homepage-right">
         <h1>WELCOME, {{ username }}!!</h1>
         
+        <h3>Groups Number {{ no_groups }} </h3>
 
-        <p>Groups 0</p>
+        {% for group in groups %}
+            {{ group }} <br/>
+        {% endfor %}
 
-        <p>My name is {{ first_name }} </p>
+        <h3>Ongoing Review</h3>
+        
+        <h3>Completed Review</h3>
+        
+        <a href="{{ url_for('create_group') }}">Add group</a>
+        <br/><br/>
 
-        <p>{{ stuff|safe }}</p>
+        
+        
+    </div>
+    <div class="homepage-right">
+        
     </div>
 </div>
 

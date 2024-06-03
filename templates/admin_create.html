@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="create-group">
+    <h1>Create Group</h1>
+        <form method="POST">
+            <label for="name">Group Name:</label>
+            <input type="text" name="group_name" id="group_name" required><br>
+            <label for="group">Group Leader:</label>
+            <input type="text" name="group_leader" id="group_leader" required><br>
+            <label for="subject">Subject:</label>
+            <input type="text" name="subject" id="subject" required><br>
+            <label for="subject">Lecturer:</label>
+            <input type="text" name="lecturer" id="lecturer" required><br>
+            <form class="modal-content animate" action="/success" method="post">
+                <label for="members">Number of members:</label>
+                <input type="number" id="members" name="members" required>
+                <div id="placeholders">
+                    {% for placeholder in member_names %}
+                    <input type="text" placeholder="{{ placeholder.placeholder }}">
+                    {% endfor %}
+                </div>
+            </form>
+            <button type="submit">Submit</button>
+        </form>
+        <script>
+            const membersInput = document.getElementById('members');
+            const placeholdersDiv = document.getElementById('placeholders');
+        
+            membersInput.addEventListener('input', (e) => {
+                const numMembers = parseInt(e.target.value);
+                placeholdersDiv.innerHTML = '';
+                for (let i = 0; i < numMembers; i++) {
+                    const placeholder = document.createElement('input');
+                    placeholder.type = 'text';
+                    placeholder.placeholder = `Member ${i + 1}`;
+                    placeholdersDiv.appendChild(placeholder);
+                }
+            });
+        </script>
+</div>        
+    
+{% endblock %}
