@@ -4,40 +4,29 @@
 <div class="create-group">
     <h1>Create Group</h1>
         <form method="POST">
-            <label for="name">Group Name:</label>
+            <label for="group_name">Group Name:</label>
             <input type="text" name="group_name" id="group_name" required><br>
-            <label for="group">Group Leader:</label>
+            <label for="group_leader">Group Leader:</label>
             <input type="text" name="group_leader" id="group_leader" required><br>
             <label for="subject">Subject:</label>
             <input type="text" name="subject" id="subject" required><br>
-            <label for="subject">Lecturer:</label>
+            <label for="lecturer">Lecturer:</label>
             <input type="text" name="lecturer" id="lecturer" required><br>
-            <form class="modal-content animate" action="/success" method="post">
-                <label for="members">Number of members:</label>
-                <input type="number" id="members" name="members" required>
-                <div id="placeholders">
-                    {% for placeholder in member_names %}
-                    <input type="text" placeholder="{{ placeholder.placeholder }}">
-                    {% endfor %}
-                </div>
-            </form>
-            <button type="submit">Submit</button>
+            
+            <input type="submit" value="Submit">
         </form>
-        <script>
-            const membersInput = document.getElementById('members');
-            const placeholdersDiv = document.getElementById('placeholders');
-        
-            membersInput.addEventListener('input', (e) => {
-                const numMembers = parseInt(e.target.value);
-                placeholdersDiv.innerHTML = '';
-                for (let i = 0; i < numMembers; i++) {
-                    const placeholder = document.createElement('input');
-                    placeholder.type = 'text';
-                    placeholder.placeholder = `Member ${i + 1}`;
-                    placeholdersDiv.appendChild(placeholder);
-                }
-            });
-        </script>
+    {% if csv_data %}
+    <a href="/admin/download_csv">
+        <button>Download CSV</button>
+    </a>
+    {% endif %}    
+    {% if csv_data %}
+    <div>
+        <h2>Generated CSV:</h2>
+        <pre>{{ csv_data }}</pre>
+    </div>
+    {% endif %}
+    
 </div>        
     
 {% endblock %}

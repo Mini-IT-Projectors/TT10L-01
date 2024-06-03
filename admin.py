@@ -26,7 +26,7 @@ def generate_csv():
     for user in users:
         csv_data += f"{user['name']},{user['group']},{user['subject']}\n"
  
-    return render_template("index.html", csv_data=csv_data)
+    return render_template("csv.html", csv_data=csv_data)
  
 @app.route("/download_csv")
 def download_csv():

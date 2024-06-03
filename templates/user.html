@@ -4,5 +4,28 @@
     <div class="user">
         <h1>Hello {{user_name|lower}}</h1>
     </div>
-
+    <form class="modal-content animate" action="/success" method="post">
+        <label for="members">Number of members:</label>
+        <input type="number" id="members" name="members" required>
+        <div id="placeholders">
+            {% for placeholder in member_names %}
+            <input type="text" placeholder="{{ placeholder.placeholder }}">
+            {% endfor %}
+        </div>
+    </form>
+    <script>
+        const membersInput = document.getElementById('members');
+        const placeholdersDiv = document.getElementById('placeholders');
+    
+        membersInput.addEventListener('input', (e) => {
+            const numMembers = parseInt(e.target.value);
+            placeholdersDiv.innerHTML = '';
+            for (let i = 0; i < numMembers; i++) {
+                const placeholder = document.createElement('input');
+                placeholder.type = 'text';
+                placeholder.placeholder = `Member ${i + 1}`;
+                placeholdersDiv.appendChild(placeholder);
+            }
+        });
+    </script>
 {% endblock %}
