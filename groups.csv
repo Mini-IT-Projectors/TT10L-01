@@ -1,2 +1,3 @@
-group_name,group_leader,subject,lecturer
-akmal,akmal,Chemistry,Suhaini
+group_name,group_leader,subject,lecturer,num_member
+orang,akmal,Chemistry,Suhaini,2
+hutan,akmal,Chemistry,Suhaini,2

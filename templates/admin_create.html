@@ -12,12 +12,16 @@
             <input type="text" name="subject" id="subject" required><br>
             <label for="lecturer">Lecturer:</label>
             <input type="text" name="lecturer" id="lecturer" required><br>
-            
-            <input type="submit" value="Submit">
+            <label for="num_members">Number Of Group Member:</label>
+            <input type="number" name="num_members" id="num_members" required><br>
+            <input type="submit" href="{{ url_for('member_group') }}" value="Submit">
         </form>
     {% if csv_data %}
     <a href="/admin/download_csv">
         <button>Download CSV</button>
+    </a>
+    <a href="{{ url_for('member_group') }}">
+        Next
     </a>
     {% endif %}    
     {% if csv_data %}
@@ -26,6 +30,7 @@
         <pre>{{ csv_data }}</pre>
     </div>
     {% endif %}
+    
     
 </div>        
     

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="add-member">
+    <h1>Add Members to Group</h1>
+        <form method="POST">
+            <label for="group_name">Group Name:</label>
+            <input type="text" name="group_name" id="group_name" required><br>
+            <label for="num_members">Number Of Group Member:</label>
+            <input type="number" name="num_members" id="num_members" required><br>
+
+            <div id="member-list">
+                {% if num_members > 0 %}
+                    <form method="POST">
+                        {% for i in range(num_members) %}
+                            <label for="member_{{ i+1 }}">Member {{ i+1 }}:</label>
+                            <input type="text" id="member_{{ i+1 }}" name="member_{{ i+1 }}" required><br><br>
+                        {% endfor %}
+                        <button type="submit">Add Members</button>
+                    </form>
+                {% endif %}
+            </div>
+            
+        </form>
+        <script>
+            const numMembersInput = document.getElementById('num_members');
+            const memberListDiv = document.getElementById('member-list');
+        
+            numMembersInput.addEventListener('input', () => {
+                const numMembers = parseInt(numMembersInput.value);
+                memberListDiv.innerHTML = '';
+                if (numMembers > 0) {
+                    const form = document.createElement('form');
+                    form.method = "POST";
+                    for (let i = 0; i < numMembers; i++) {
+                        const memberInput = document.createElement('input');
+                        memberInput.type = 'text';
+                        memberInput.name = `member_${i + 1}`;
+                        memberInput.id = `member_${i + 1}`;
+                        memberInput.required = true;
+                        const label = document.createElement('label');
+                        label.textContent = `Member ${i + 1}:`;
+                        label.htmlFor = `member_${i + 1}`;
+                        memberListDiv.appendChild(label);
+                        memberListDiv.appendChild(memberInput);
+                        memberListDiv.appendChild(document.createElement('br'));
+                    }
+                    const submitButton = document.createElement('button');
+                    submitButton.type = 'submit';
+                    submitButton.textContent = 'Add Members';
+                    form.appendChild(submitButton);
+                    memberListDiv.appendChild(form);
+                }
+            });
+        </script>
+        
+</div>
+{% endblock %}

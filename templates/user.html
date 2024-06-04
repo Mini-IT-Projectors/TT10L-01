@@ -28,4 +28,31 @@
             }
         });
     </script>
+    @app.route('/admin/member_group', methods=['POST'])
+    def member_group():
+        num_members = int(request.form.get('members'))
+        member_names = []
+        for i in range(num_members):
+            member_name = request.form.get(f'member_{i+1}')
+            if check_username(member_name):
+                member_names.append(member_name)
+        merged_member_names = ', '.join(member_names)
+        return render_template('member_group.html',
+                               merged_member_names=merged_member_names) 
+                               
+                               num_members = 0
+                               if 'members' in request.form:
+                                   num_members = int(request.form.get('members'))
+                               else:
+                                   # Handle the case where 'members' is not present in the form data
+                                   flash('Number of members is required', 'danger')
+                               member_names=[]
+                               member_name=''
+                               if 'member_name' in request.form:
+                                   member_name = request.form['member_name']
+                               for i in range(num_members):           
+                                   member_name = request.form.get(f'member_{i+1}')
+                                   if check_username(member_name):
+                                       member_names.append(member_name)
+                               merged_member_names = ', '.join(member_names)
 {% endblock %}

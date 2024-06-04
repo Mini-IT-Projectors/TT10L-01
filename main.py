@@ -60,7 +60,16 @@ def check_lecturer(username) :
             if row['lecturer_username'] == username:
                 return True
     return False
-
+#Read Group Name and Total Members
+def check_group(group_name,num_members):
+    if not os.path.exists('groups.csv'):
+        return False
+    with open('groups.csv', mode='r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            if row['group_name'] == group_name and row['num_member'] == num_members:
+                return True
+    return False
 @app.route('/')
 def home():
     return render_template('home.html', title='Peer Review System')
@@ -119,6 +128,7 @@ def index_admin():
 
 #Admin create group
 groups = []
+
 @app.route("/admin/create_group", methods=['GET', 'POST'])
 def create_group():
     if request.method == "POST":
@@ -126,10 +136,13 @@ def create_group():
         group_leader = request.form.get("group_leader")
         subject = request.form.get("subject")
         lecturer = request.form.get("lecturer")
+        num_members = int(request.form['num_members'])
+        
         if check_username(group_leader) and check_lecturer(lecturer):
-            groups.append({"group_name": group_name, "group_leader": group_leader, "subject": subject, "lecturer": lecturer})
+            groups.append({"group_name": group_name, "group_leader": group_leader, "subject": subject, "lecturer": lecturer, "num_members": num_members})
         else:
             flash('Invalid Group Leader or Lecturer')
+        
     username = session.get('username')
     return render_template("admin_create.html",
                            csv_data = groups,
@@ -141,9 +154,9 @@ def generate_csv():
         return "No data to generate CSV."
  
     # Create a CSV string from the user data
-    csv_data = "group_name,group_leader,subject,lecturer\n"
+    csv_data = "group_name,group_leader,subject,lecturer,num_member\n"
     for group in groups:
-        csv_data += f"{group['group_name']},{group['group_leader']},{group['subject']},{group['lecturer']}\n"
+        csv_data += f"{group['group_name']},{group['group_leader']},{group['subject']},{group['lecturer']},{group['num_members']}\n"
  
     return render_template("admin_create.html", csv_data=csv_data)
 
@@ -153,9 +166,9 @@ def download_csv():
         return "No data to download."
     
     # Create a CSV string from the groups data
-    csv_data = "group_name,group_leader,subject,lecturer\n"
+    csv_data = "group_name,group_leader,subject,lecturer,num_member\n"
     for group in groups:
-        csv_data += f"{group['group_name']},{group['group_leader']},{group['subject']},{group['lecturer']}\n"
+        csv_data += f"{group['group_name']},{group['group_leader']},{group['subject']},{group['lecturer']},{group['num_members']}\n"
  
     # Create a temporary CSV file and serve it for download
     with open("groups.csv", "w") as csv_file:
@@ -169,9 +182,9 @@ def download_csv_direct():
         return "No data to download."
  
     # Create a CSV string from the user data
-    csv_data = "group_name,group_leader,subject,lecturer\n"
+    csv_data = "group_name,group_leader,subject,lecturer,num_member\n"
     for group in groups:
-        csv_data += f"{group['group_name']},{group['group_leader']},{group['subject']},{group['lecturer']}\n"
+        csv_data += f"{group['group_name']},{group['group_leader']},{group['subject']},{group['lecturer']},{group['num_members']}\n"
  
     # Create a direct download response with the CSV data and appropriate headers
     response = Response(csv_data, content_type="text/csv")
@@ -179,18 +192,33 @@ def download_csv_direct():
  
     return response
 #Number of members
-@app.route('/admin/member_group', methods=['POST'])
+
+@app.route('/admin/member_group', methods=['GET','POST'])
 def member_group():
-    num_members = int(request.form.get('members'))
-    member_names = []
-    for i in range(num_members):
-        member_name = request.form.get(f'member_{i+1}')
-        if check_username(member_name):
-            member_names.append(member_name)
-    merged_member_names = ', '.join(member_names)
-    return render_template('member_group.html',
-                           merged_member_names=merged_member_names)
-    
+    num_members = 0
+    if request.method == "POST":
+        group_name = request.form.get("group_name")
+        num_members = int(request.form['num_members'])
+        if num_members and num_members.isdigit():
+            num_members = int(num_members)
+        else:
+            # Handle invalid num_members value
+            flash("Invalid number of members")
+            return redirect(url_for('member_group'))
+        if check_group(group_name,num_members):
+            member_names = [] # Initialize the list outside the loop
+            for i in range(int(num_members)):
+                member_name = request.form.get(f'member_{i+1}')
+                if check_username(member_name):
+                    member_names.append(member_name)
+        username = session.get('username')
+        merged_member_names = ', '.join(member_names)
+        return render_template('member_group.html',
+                                username=username,
+                                num_members = num_members,
+                                merged_member_names=merged_member_names) 
+    return render_template('member_group.html', num_members=num_members)
+
 @app.route("/admin/success")
 def success():
     return render_template('success.html')
