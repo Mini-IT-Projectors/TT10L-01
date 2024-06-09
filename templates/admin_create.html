@@ -3,35 +3,71 @@
 {% block content %}
 <div class="create-group">
     <h1>Create Group</h1>
-        <form method="POST">
+        <form action="{{ url_for('create_group') }}" method="post" >
+            {{ form.hidden_tag() }}
             <label for="group_name">Group Name:</label>
-            <input type="text" name="group_name" id="group_name" required><br>
+            <input type="text" id="group_name" name="group_name" required>
+            <br><br>
             <label for="group_leader">Group Leader:</label>
-            <input type="text" name="group_leader" id="group_leader" required><br>
+            <input type="text" id="group_leader" name="group_leader" required>
+            <br><br>
             <label for="subject">Subject:</label>
-            <input type="text" name="subject" id="subject" required><br>
+            <input type="text" id="subject" name="subject" required>
+            <br><br>
             <label for="lecturer">Lecturer:</label>
-            <input type="text" name="lecturer" id="lecturer" required><br>
-            <label for="num_members">Number Of Group Member:</label>
-            <input type="number" name="num_members" id="num_members" required><br>
-            <input type="submit" href="{{ url_for('member_group') }}" value="Submit">
+            <input type="text" id="lecturer" name="lecturer" required>
+            <br><br>
+            <label for="number_of_members">Number of Members:</label>
+            <input type="number" id="number_of_members" name="number_of_members" required>
+            <br><br>
+            <div id="member-list">
+                {% if number_of_members > 0 %}
+                    {% for field in form.member_names %}
+                        {{ field.label }} {{ field(size=20) }}
+                        <br><br>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {{ form.submit }}
         </form>
-    {% if csv_data %}
-    <a href="/admin/download_csv">
-        <button>Download CSV</button>
-    </a>
-    <a href="{{ url_for('member_group') }}">
-        Next
-    </a>
-    {% endif %}    
-    {% if csv_data %}
-    <div>
-        <h2>Generated CSV:</h2>
-        <pre>{{ csv_data }}</pre>
-    </div>
-    {% endif %}
-    
-    
-</div>        
-    
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+    <script>
+        const numMembersInput = document.getElementById('number_of_members');
+        const memberListDiv = document.getElementById('member-list');
+
+        numMembersInput.addEventListener('input', () => {
+            const numMembers = parseInt(numMembersInput.value);
+            memberListDiv.innerHTML = '';
+            if (numMembers > 0) {
+                for (let i = 0; i < numMembers; i++) {
+                    const fieldContainer = document.createElement('div');
+                    const label = document.createElement('label');
+                    const input = document.createElement('input');
+
+                    label.textContent = `Member ${i + 1} Name:`;
+                    label.htmlFor = `member_name_${i + 1}`;
+                    input.type = 'text';
+                    input.name = `member_name_${i + 1}`;
+                    input.id = `member_name_${i + 1}`;
+                    input.required = true;
+
+                    fieldContainer.appendChild(label);
+                    fieldContainer.appendChild(input);
+                    fieldContainer.appendChild(document.createElement('br'));
+
+                    memberListDiv.appendChild(fieldContainer);
+                }
+            }
+        });
+    </script>
+</div>
 {% endblock %}

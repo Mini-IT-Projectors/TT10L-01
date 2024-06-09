@@ -1,3 +1,5 @@
-group_name,group_leader,subject,lecturer,num_member
-orang,akmal,Chemistry,Suhaini,2
-hutan,akmal,Chemistry,Suhaini,2
+Group Name,Group Leader,Subject,Lecturer,Number of Members,Member Names
+akmal,akmal,Chemistry,Suhaini,1,ardy
+orang,akmal,Chemistry,Suhaini,2,"ardy, hannan"
+orang,ardy,Biology,Suhaini,3,"ardy, hannan, akmal"
+hutan,hannan,Burger,Suhaini,1,ardy

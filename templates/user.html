@@ -55,4 +55,36 @@
                                    if check_username(member_name):
                                        member_names.append(member_name)
                                merged_member_names = ', '.join(member_names)
+
+                               #Number of members
+
+                               @app.route('/admin/member_group', methods=['GET','POST'])
+                               def member_group():
+                                   num_members = 0
+                                   if request.method == "POST":
+                                       group_name = request.form.get("group_name")
+                                       num_members = int(request.form['num_members'])
+                                       if num_members and num_members.isdigit():
+                                           num_members = int(num_members)
+                                       else:
+                                           # Handle invalid num_members value
+                                           flash("Invalid number of members")
+                                           return redirect(url_for('member_group'))
+                                       if check_group(group_name,num_members):
+                                           member_names = [] # Initialize the list outside the loop
+                                           for i in range(int(num_members)):
+                                               member_name = request.form.get(f'member_{i+1}')
+                                               if check_username(member_name):
+                                                   member_names.append(member_name)
+                                       username = session.get('username')
+                                       merged_member_names = ', '.join(member_names)
+                                       csv_data += merged_member_names
+                                       with open("members.csv", "w") as csv_file:
+                                           csv_file.write(csv_data)
+                                       return render_template('member_group.html',
+                                                               username=username,
+                                                               num_members = num_members,
+                                                               merged_member_names=merged_member_names) 
+                                   return render_template('member_group.html', num_members=num_members)
+                               
 {% endblock %}

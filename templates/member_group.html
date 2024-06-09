@@ -11,7 +11,7 @@
 
             <div id="member-list">
                 {% if num_members > 0 %}
-                    <form method="POST">
+                    <form method="POST" action="{{ url_for('success') }}">
                         {% for i in range(num_members) %}
                             <label for="member_{{ i+1 }}">Member {{ i+1 }}:</label>
                             <input type="text" id="member_{{ i+1 }}" name="member_{{ i+1 }}" required><br><br>

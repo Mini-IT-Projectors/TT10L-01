@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="group_list">
+    <h1>Groups List</h1>
+        <ul>
+        {% for group in groups %}
+            <li>
+                {{ group.group_name }} (Leader: {{ group.group_leader }}, Subject: {{ group.subject }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+            </li>
+        {% endfor %}
+        </ul>
+</div>
+{% endblock %}

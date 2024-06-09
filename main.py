@@ -5,7 +5,7 @@ import csv
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, FieldList
 from wtforms.validators import DataRequired
 
 
@@ -124,100 +124,130 @@ def index_admin():
     return render_template("index_admin.html",
                            groups = groups,
                            no_groups = no_groups,
-                           username=username)
+                           username = username)
 
 #Admin create group
 groups = []
 
-@app.route("/admin/create_group", methods=['GET', 'POST'])
+if not os.path.exists('groups.csv'):
+    with open('groups.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Group Name', 'Group Leader', 'Subject', 'Lecturer', 'Number of Members', 'Member Names'])  # header row
+        
+def add_group_to_csv(group, member_names):
+    with open('groups.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([group.group_name, group.group_leader, group.subject, group.lecturer, group.number_of_members, ', '.join(member_names)])
+
+def get_all_groups_from_csv():
+    with open('groups.csv', 'r', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)  # skip header row
+        for row in reader:
+            group = (Group(row[0], row[1], row[2], row[3], row[4], row[5: ]))
+            groups.append(group)
+    return groups
+
+class GroupForm(FlaskForm):
+    group_name = StringField('Group Name', validators=[DataRequired()])
+    group_leader = StringField('Group Leader',validators=[DataRequired()])
+    subject = StringField('Subject', validators=[DataRequired()])
+    lecturer = StringField('Lecturer', validators=[DataRequired()])
+    number_of_members = IntegerField('Number of Members', validators=[DataRequired()])
+    member_names = FieldList(StringField(f'Member Name', validators=[DataRequired()]))
+    submit = SubmitField('Create Group')
+
+
+class Group:
+    def __init__(self, group_name, group_leader, subject, lecturer, number_of_members, member_names):
+        self.group_name = group_name
+        self.group_leader = group_leader
+        self.subject = subject
+        self.lecturer = lecturer
+        self.number_of_members = number_of_members
+        self.member_names = member_names
+
+    def __repr__(self):
+        return f'Group({self.group_name}, {self.group_leader}, {self.subject}, {self.lecturer}, {self.number_of_members},{self.member_names})'
+    
+@app.route("/admin/create_group", methods=['GET','POST'])
 def create_group():
+    form = GroupForm()
+    group = None
+    if form.validate_on_submit():
+        member_names = []
+        for i in range(form.number_of_members.data):
+            member_name = request.form[f'member_name_{i + 1}']
+            member_names.append(member_name)
+        group = Group(form.group_name.data, form.group_leader.data, form.subject.data, form.lecturer.data, form.number_of_members.data, member_names)
+        add_group_to_csv(group, member_names)
+        # Save the group data to a CSV file or database
+        flash('Group created successfully!')
+        return redirect(url_for('groups_list'))
+    return render_template('admin_create.html',number_of_members=form.number_of_members.data if form.number_of_members.data else 0, form=form, group=group if group else {}) 
+
+@app.route("/admin/groups_list")
+def groups_list():
+    # Assuming you have a list of Group objects called groups
+    groups = get_all_groups_from_csv()
+
+    return render_template('admin_groups_list.html', groups=groups)    
+
+@app.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
+    form = UserForm()
+    csv_file = 'groups.csv'
+
     if request.method == "POST":
-        group_name = request.form.get("group_name")
-        group_leader = request.form.get("group_leader")
-        subject = request.form.get("subject")
-        lecturer = request.form.get("lecturer")
-        num_members = int(request.form['num_members'])
-        
-        if check_username(group_leader) and check_lecturer(lecturer):
-            groups.append({"group_name": group_name, "group_leader": group_leader, "subject": subject, "lecturer": lecturer, "num_members": num_members})
+        name_to_update = {}
+        with open(csv_file, 'r', newline='') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['id'] == current_user.id:
+                    name_to_update = row
+                    break
+
+        if name_to_update:
+            name_to_update['name'] = request.form['name']
+            name_to_update['email'] = request.form['email']
+            name_to_update['favorite_color'] = request.form['favorite_color']
+            name_to_update['username'] = request.form['username']
+            name_to_update['about_author'] = request.form['about_author']
+
+            # Check for profile pic
+            if request.files['profile_pic']:
+                pic_filename = secure_filename(request.files['profile_pic'].filename)
+                pic_name = str(uuid.uuid1()) + "_" + pic_filename
+                request.files['profile_pic'].save(os.path.join(app.config['UPLOAD_FOLDER'], pic_name))
+                name_to_update['profile_pic'] = pic_name
+
+            with open(csv_file, 'w', newline='') as file:
+                writer = csv.DictWriter(file, fieldnames=name_to_update.keys())
+                writer.writeheader()
+                writer.writerow(name_to_update)
+
+            flash("User Updated Successfully!")
+            return render_template("dashboard.html", form=form, name_to_update=name_to_update)
         else:
-            flash('Invalid Group Leader or Lecturer')
-        
-    username = session.get('username')
-    return render_template("admin_create.html",
-                           csv_data = groups,
-                           username=username)
-    
-@app.route("/admin/generate_csv")
-def generate_csv():
-    if len(groups) == 0:
-        return "No data to generate CSV."
- 
-    # Create a CSV string from the user data
-    csv_data = "group_name,group_leader,subject,lecturer,num_member\n"
-    for group in groups:
-        csv_data += f"{group['group_name']},{group['group_leader']},{group['subject']},{group['lecturer']},{group['num_members']}\n"
- 
-    return render_template("admin_create.html", csv_data=csv_data)
+            flash("Error!  Looks like there was a problem...try again!")
+            return render_template("dashboard.html", form=form, name_to_update={})
+    else:
+        with open(csv_file, 'r', newline='') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                if row['id'] == current_user.id:
+                    return render_template("dashboard.html", form=form, name_to_update=row)
 
-@app.route("/admin/download_csv")
-def download_csv():
-    if len(groups) == 0:
-        return "No data to download."
-    
-    # Create a CSV string from the groups data
-    csv_data = "group_name,group_leader,subject,lecturer,num_member\n"
-    for group in groups:
-        csv_data += f"{group['group_name']},{group['group_leader']},{group['subject']},{group['lecturer']},{group['num_members']}\n"
- 
-    # Create a temporary CSV file and serve it for download
-    with open("groups.csv", "w") as csv_file:
-        csv_file.write(csv_data)
-    
-    return send_file("groups.csv", as_attachment=True, download_name="groups.csv")
+    return render_template('dashboard.html')
 
-@app.route("/admin/download_csv_direct")
-def download_csv_direct():
-    if len(groups) == 0:
-        return "No data to download."
- 
-    # Create a CSV string from the user data
-    csv_data = "group_name,group_leader,subject,lecturer,num_member\n"
-    for group in groups:
-        csv_data += f"{group['group_name']},{group['group_leader']},{group['subject']},{group['lecturer']},{group['num_members']}\n"
- 
-    # Create a direct download response with the CSV data and appropriate headers
-    response = Response(csv_data, content_type="text/csv")
-    response.headers["Content-Disposition"] = "attachment; filename=groups.csv"
- 
-    return response
-#Number of members
 
-@app.route('/admin/member_group', methods=['GET','POST'])
-def member_group():
-    num_members = 0
-    if request.method == "POST":
-        group_name = request.form.get("group_name")
-        num_members = int(request.form['num_members'])
-        if num_members and num_members.isdigit():
-            num_members = int(num_members)
-        else:
-            # Handle invalid num_members value
-            flash("Invalid number of members")
-            return redirect(url_for('member_group'))
-        if check_group(group_name,num_members):
-            member_names = [] # Initialize the list outside the loop
-            for i in range(int(num_members)):
-                member_name = request.form.get(f'member_{i+1}')
-                if check_username(member_name):
-                    member_names.append(member_name)
-        username = session.get('username')
-        merged_member_names = ', '.join(member_names)
-        return render_template('member_group.html',
-                                username=username,
-                                num_members = num_members,
-                                merged_member_names=merged_member_names) 
-    return render_template('member_group.html', num_members=num_members)
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    csv_file = "groups.csv"
+    with open(csv_file, "r", newline="") as file:
+        reader = csv.DictReader(file)
+        groups = [row for row in reader]
+    return render_template("admin_dashboard.html", csv_data=groups)
 
 @app.route("/admin/success")
 def success():
