@@ -61,13 +61,13 @@ def check_lecturer(username) :
                 return True
     return False
 #Read Group Name and Total Members
-def check_group(group_name,num_members):
+def check_group(subject,group_name):
     if not os.path.exists('groups.csv'):
         return False
     with open('groups.csv', mode='r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
-            if row['group_name'] == group_name and row['num_member'] == num_members:
+            if row['Group Name'] == group_name and row['Subject'] == subject:
                 return True
     return False
 @app.route('/')
@@ -88,18 +88,69 @@ def login_user():
             flash('Invalid username or password', 'danger')
     return render_template('login_user.html', title='Login', form=form)
 
+groups = []
 @app.route('/user/home')
 def index_user(): 
-    first_name = "Akmal"
-    stuff = "This is <strong>Bold</strong> Text"
-    
-    favorite_pizza = ["Pepperoni", "Cheese", "Mushroom", 41]
     username = session.get('username')
-    return render_template("index_user.html",
-                           first_name = first_name,
-                           stuff=stuff,
-                           favorite_pizza=favorite_pizza,
-                           username=username)
+    groups = None
+    with open('groups.csv', mode='r') as file:
+        groups = get_all_groups_from_csv()
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            if row["Group Leader"] == username or username in row['Member Names']:
+                return render_template("index_user.html",
+                                    groups = groups,
+                                    username = username)
+    return render_template("index_user.html",groups=groups)
+    
+    
+class ReviewForm(FlaskForm):
+    subject = StringField('Subject', validators=[DataRequired()])
+    group_name = StringField('Group Name', validators=[DataRequired()])        
+    member_name_you_review = StringField('Member Name', validators=[DataRequired()])
+    review = StringField('Review', validators=[DataRequired()])
+    submit = SubmitField('Send')
+
+if not os.path.exists('reviews.csv'):
+    with open('reviews.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Name', 'Group Name', 'Subject', 'Member Names You Review', 'Review'])  # header row
+
+def add_review_to_csv(username, review):
+    with open('reviews.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([username, review.group_name, review.subject, review.member_name_you_review, review.review])
+
+class Review:
+    def __init__(self, username, subject, group_name, member_names_you_review, review):
+        self.username = username
+        self.subject = subject
+        self.group_name = group_name
+        self.member_name_you_review = member_names_you_review
+        self.review = review
+        
+    def __repr__(self):
+        return f'Group({self.username}, {self.subject}, {self.group_name}, {self.member_name_you_review}, {self.review})'
+    
+
+@app.route('/user/review', methods=['GET', 'POST'])
+def user_review():
+    form = ReviewForm()
+    review= None
+    username = session.get('username')
+    if form.validate_on_submit():
+        subject = form.subject.data
+        group_name = form.group_name.data
+        if check_group(subject,group_name):
+            flash('Login successful!', 'success')
+            
+        review = Review(username, form.subject.data, form.group_name.data, form.member_name_you_review.data, form.review.data)
+        add_review_to_csv(username,review)
+        return redirect(url_for('user_review'))    
+    return render_template("review_user.html",
+                           username = username,
+                           form=form,
+                           review=review if review else {})
 
 @app.route('/admin_login', methods=['GET', 'POST'])
 def login_admin():
@@ -118,16 +169,29 @@ def login_admin():
 @app.route('/admin/home')
 def index_admin():
     
-    groups = ["Group 1", "Group 2", "Group 3", "Group 4"]
-    no_groups = len(groups)
+    groups = get_all_groups_from_csv()
+    mini_it_groups = 0
+    physics_groups = 0
+    english_groups = 0
+    with open('groups.csv', mode='r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            if row['Subject'] == "Mini IT":
+                mini_it_groups += 1
+            if row['Subject'] == "Introduction To Physics":
+                physics_groups += 1
+            if row['Subject'] == "Academic English":
+                english_groups += 1
+        
+    
     username = session.get('username')
     return render_template("index_admin.html",
-                           groups = groups,
-                           no_groups = no_groups,
-                           username = username)
-
+                            groups = groups,
+                            mini_it_groups = mini_it_groups,
+                            physics_groups = physics_groups,
+                            english_groups = english_groups,
+                            username = username)
 #Admin create group
-groups = []
 
 if not os.path.exists('groups.csv'):
     with open('groups.csv', 'w', newline='') as csvfile:

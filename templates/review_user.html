@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="review-member">
+    <h1>Review Member</h1>
+        <form action="{{ url_for('user_review') }}" method="post" >
+            {{ form.hidden_tag() }}
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" required>
+            <br><br>
+            <label for="group_name">Group Name:</label>
+            <input type="text" id="group_name" name="group_name" required>
+            <br><br>
+            <label for="member_name_you_review">Member Name:</label>
+            <input type="text" id="member_name_you_review" name="member_name_you_review" required>
+            <br><br>
+            <label for="review">Review:</label>
+            <input type="text" id="review" name="review" required>
+            <br><br>
+            {{ form.submit }}
+        </form>
+        <a href="{{ url_for('index_user')}}">Back</a>
+</div>
+
+{% endblock %}

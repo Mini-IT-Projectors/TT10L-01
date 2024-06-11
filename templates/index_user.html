@@ -3,29 +3,45 @@
 {% block content %}
 <div class="homepage">
     <div class="homepage-left">
-        <h3>Favorite Pizza:</h3>
-
-        {% for topping in favorite_pizza %}
-            {% if topping==41%}
-                {{ topping + 100}}<br/>
-            {% else %}
-                {{ topping }}<br/>
-            {% endif %}
-
-        {% endfor %}
-
-        <br/><br/>
-        {{ favorite_pizza.1 }}
-    </div>
-    <div class="homepage-right">
         <h1>WELCOME, {{ username }}!!</h1>
         
+        <h3>Mini IT</h3>
+        {% for group in groups %}
+            {% if group.subject == "Mini IT" and (group.group_leader == username or username in group.member_names) %}
+                <li>
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                    
+                </li>
+            {% endif %}
+        {% endfor %}
 
-        <p>Groups 0</p>
+        <h3>Academic English</h3>
+        {% for group in groups %}
+            {% if group.subject == "Academic English" and (group.group_leader == username or username in group.member_names)%}
+                <li>
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                </li>
+            {% endif %}
+        {% endfor %}
 
-        <p>My name is {{ first_name }} </p>
+        <h3>Introduction To Physics</h3>
+        {% for group in groups %}
+            {% if group.subject == "Introduction To Physics" and (group.group_leader == username or username in group.member_names)%}
+                <li>
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                </li>
+            {% endif %}
+        {% endfor %}
 
-        <p>{{ stuff|safe }}</p>
+
+        <h3>Ongoing Review</h3>
+        
+        <h3>Completed Review</h3>
+
+        <a href="{{ url_for('user_review') }}">Review</a>
+
+        </br>
+
     </div>
 </div>
 

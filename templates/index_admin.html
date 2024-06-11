@@ -5,24 +5,40 @@
     <div class="homepage-left">
         <h1>WELCOME, {{ username }}!!</h1>
         
-        <h3>Groups Number {{ no_groups }} </h3>
-
+        <h3>Mini IT: {{ mini_it_groups }} Groups</h3>
         {% for group in groups %}
-            {{ group }} <br/>
+            {% if group.subject == "Mini IT" %}
+                <li>
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                    
+                </li>
+            {% endif %}
         {% endfor %}
+
+        <h3>Academic English: {{ english_groups }} Groups</h3>
+        {% for group in groups %}
+            {% if group.subject == "Academic English" %}
+                <li>
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        <h3>Introduction To Physics: {{ physics_groups }} Groups</h3>
+        {% for group in groups %}
+            {% if group.subject == "Introduction To Physics" %}
+                <li>
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                </li>
+            {% endif %}
+        {% endfor %}
+
 
         <h3>Ongoing Review</h3>
         
         <h3>Completed Review</h3>
-        
-        <a href="{{ url_for('create_group') }}">Add group</a>
-        <br/><br/>
+        </br>
 
-        
-        
-    </div>
-    <div class="homepage-right">
-        
     </div>
 </div>
 
