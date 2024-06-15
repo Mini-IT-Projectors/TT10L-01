@@ -5,7 +5,7 @@ import csv
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, FieldList
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, FieldList, SelectField
 from wtforms.validators import DataRequired
 
 
@@ -216,10 +216,26 @@ def get_all_groups_from_csv():
 class GroupForm(FlaskForm):
     group_name = StringField('Group Name', validators=[DataRequired()])
     group_leader = StringField('Group Leader',validators=[DataRequired()])
-    subject = StringField('Subject', validators=[DataRequired()])
-    lecturer = StringField('Lecturer', validators=[DataRequired()])
+    subject = SelectField('Subject', choices=[
+        ('Select Subject', 'Select Subject'),
+        ('Mini IT Project', 'Mini IT Project'),
+        ('Introduction To Physics', 'Introduction To Physics'),
+        ('Mathematics III', 'Mathematics III'),
+        ('Academic English', 'Academic English'),
+        ('Critical Thinking', 'Critical Thinking'),
+        ('Introduction To Digital System', 'Introduction To Digital System')
+    ], validators=[DataRequired()])
+    lecturer = SelectField('Lecturer', choices=[
+        ('Select Lecturer', 'Select Lecturer'),
+        ('Suhaini Binti Nordin', 'Suhaini Binti Nordin'),
+        ('Zubair Hassan Tarif', 'Zubair Hassan Tarif'),
+        ('Munirah Binti Munawar Ali', 'Munirah Binti Munawar Ali'),
+        ('Khairi Shazwan Bin Dollmat', 'Khairi Shazwan Bin Dollmat'),
+        ('Muhammad Effendi Bin Ismail', 'Muhammad Effendi Bin Ismail'),
+        ('Mohammad Shadab Khan', 'Mohammad Shadab Khan')
+    ], validators=[DataRequired()])
     number_of_members = IntegerField('Number of Members', validators=[DataRequired()])
-    member_names = FieldList(StringField(f'Member Name', validators=[DataRequired()]))
+    member_names = FieldList(StringField(f'Member Name', validators=[DataRequired()], min_entries=1))
     submit = SubmitField('Create Group')
 
 
@@ -244,11 +260,14 @@ def create_group():
         for i in range(form.number_of_members.data):
             member_name = request.form[f'member_name_{i + 1}']
             member_names.append(member_name)
-        group = Group(form.group_name.data, form.group_leader.data, form.subject.data, form.lecturer.data, form.number_of_members.data, member_names)
-        add_group_to_csv(group, member_names)
-        # Save the group data to a CSV file or database
-        flash('Group created successfully!')
-        return redirect(url_for('groups_list'))
+        if form.lecturer.data == 'Select Lecturer' or form.subject.data == 'Select Subject':
+            flash('Please select a valid lecturer or subject', 'danger')
+            return redirect(url_for('create_group'))
+        else:
+            group = Group(form.group_name.data, form.group_leader.data, form.subject.data, form.lecturer.data, form.number_of_members.data, member_names)
+            add_group_to_csv(group, member_names)
+            flash('Group created successfully!')
+            return redirect(url_for('groups_list'))
     return render_template('admin_create.html',number_of_members=form.number_of_members.data if form.number_of_members.data else 0, form=form, group=group if group else {}) 
 
 @app.route("/admin/groups_list")

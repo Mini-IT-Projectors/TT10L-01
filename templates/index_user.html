@@ -5,9 +5,9 @@
     <div class="homepage-left">
         <h1>WELCOME, {{ username }}!!</h1>
         
-        <h3>Mini IT</h3>
+        <h3>Mini IT Project</h3>
         {% for group in groups %}
-            {% if group.subject == "Mini IT" and (group.group_leader == username or username in group.member_names) %}
+            {% if group.subject == "Mini IT Project" and (group.group_leader == username or username in group.member_names) %}
                 <li>
                     {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
                     
