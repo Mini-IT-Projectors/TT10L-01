@@ -57,17 +57,17 @@ def check_lecturer(username) :
     with open('lecturer.csv', mode='r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
-            if row['lecturer_username'] == username:
+            if row['lecturers'] == username:
                 return True
     return False
 #Read Group Name and Total Members
-def check_group(subject,group_name):
+def check_group(subject,group_name,member_name):
     if not os.path.exists('groups.csv'):
         return False
     with open('groups.csv', mode='r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
-            if row['Group Name'] == group_name and row['Subject'] == subject:
+            if row['Group Name'] == group_name and row['Subject'] == subject and member_name in row['Member Names']:
                 return True
     return False
 @app.route('/')
@@ -141,7 +141,8 @@ def user_review():
     if form.validate_on_submit():
         subject = form.subject.data
         group_name = form.group_name.data
-        if check_group(subject,group_name):
+        member_name_you_review = form.member_name_you_review.data
+        if check_group(subject,group_name,member_name_you_review):
             flash('Login successful!', 'success')
             
         review = Review(username, form.subject.data, form.group_name.data, form.member_name_you_review.data, form.review.data)

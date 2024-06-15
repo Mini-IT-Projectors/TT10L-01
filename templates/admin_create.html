@@ -12,7 +12,13 @@
             <input type="text" id="group_leader" name="group_leader" required>
             <br><br>
             <label for="subject">Subject:</label>
-            <input type="text" id="subject" name="subject" required>
+            <select id = "subject" onchange = "Subject()" >  
+                <option> ---Choose tutorial--- </option>  
+                <option> w3schools </option>  
+                <option> Javatpoint </option>  
+                <option> tutorialspoint </option>  
+                <option> geeksforgeeks </option>  
+                </select>  
             <br><br>
             <label for="lecturer">Lecturer:</label>
             <input type="text" id="lecturer" name="lecturer" required>
@@ -70,6 +76,10 @@
                 }
             }
         });
+        function Subject() {  
+            var mylist = document.getElementById("subject");  
+            document.getElementById("favourite").value = mylist.options[mylist.selectedIndex].text;  
+            }
     </script>
 </div>
 {% endblock %}
