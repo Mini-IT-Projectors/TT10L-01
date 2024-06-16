@@ -5,32 +5,17 @@
     <div class="homepage-left">
         <h1>WELCOME, {{ username }}!!</h1>
         
-        <h3>Mini IT: {{ mini_it_groups }} Groups</h3>
-        {% for group in groups %}
-            {% if group.subject == "Mini IT" %}
-                <li>
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                    
-                </li>
-            {% endif %}
-        {% endfor %}
-
-        <h3>Academic English: {{ english_groups }} Groups</h3>
-        {% for group in groups %}
-            {% if group.subject == "Academic English" %}
-                <li>
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                </li>
-            {% endif %}
-        {% endfor %}
-
-        <h3>Introduction To Physics: {{ physics_groups }} Groups</h3>
-        {% for group in groups %}
-            {% if group.subject == "Introduction To Physics" %}
-                <li>
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                </li>
-            {% endif %}
+        {% for subject in ["Mini IT Project", "Academic English", "Introduction To Physics"] %}
+            <h3>{{ subject }}: {{ groups_count[subject] }} Groups</h3>
+            <ul>
+            {% for group in groups %}
+                {% if group.subject == subject %}
+                    <li>
+                        <a href="{{url_for('update_group', group_name=group.group_name)}}">{{ group.group_name }}</a> (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }}) - <a href="{{url_for('delete_group', group_name=group.group_name, subject=subject)}}">Delete</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
         {% endfor %}
 
 

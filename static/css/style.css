@@ -41,7 +41,7 @@ h1{
     color: red;
 }
 
-.homepage,.user,.create-group,.add-member,.group_list, .review-member{
+.homepage,.user,.create-group,.add-member,.group_list, .review-member, .update-group{
     margin: 5px 0 0 90px;
     
 }
