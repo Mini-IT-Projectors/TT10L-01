@@ -55,6 +55,34 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+class ReviewForm(FlaskForm):
+    subject = StringField('Subject', validators=[DataRequired()])
+    group_name = StringField('Group Name', validators=[DataRequired()])        
+    member_name_you_review = StringField('Member Name', validators=[DataRequired()])
+    review = StringField('Review', validators=[DataRequired()])
+    submit = SubmitField('Send')
+
+if not os.path.exists('reviews.csv'):
+    with open('reviews.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Name', 'Group Name', 'Subject', 'Member Names You Review', 'Review'])  # header row
+
+def add_review_to_csv(username, review):
+    with open('reviews.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([username, review.group_name, review.subject, review.member_name_you_review, review.review])
+
+class Review:
+    def __init__(self, username, subject, group_name, member_names_you_review, review):
+        self.username = username
+        self.subject = subject
+        self.group_name = group_name
+        self.member_name_you_review = member_names_you_review
+        self.review = review
+        
+    def __repr__(self):
+        return f'Review({self.username}, {self.subject}, {self.group_name}, {self.member_name_you_review}, {self.review})'
+ 
 #Read Student Name    
 def check_user(username, password):
     if not os.path.exists('users.csv'):
@@ -78,9 +106,9 @@ def check_username(username):
 
 #Read Admin Name
 def check_admin(username, password):
-    if not os.path.exists('admin.csv'):
+    if not os.path.exists('lecturer.csv'):
         return False
-    with open('admin.csv', mode='r') as file:
+    with open('lecturer.csv', mode='r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
             if row['username'] == username and row['password'] == password:
@@ -94,7 +122,7 @@ def check_lecturer(username) :
     with open('lecturer.csv', mode='r') as file:
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
-            if row['lecturers'] == username:
+            if row['username'] == username:
                 return True
     return False
 #Read Group Name and Total Members
@@ -125,7 +153,7 @@ def login_user():
             flash('Invalid username or password', 'danger')
     return render_template('login_user.html', title='Login', form=form)
 
-def save():
+def save_groups():
     global groups
     groups = []
     with open('groups.csv', 'r', newline='') as csvfile:
@@ -135,7 +163,16 @@ def save():
                 group = (Group(row[0], row[1], row[2], row[3], int(row[4]), row[5: ]))
                 groups.append(group)
 
-        
+def save_reviews():
+    global reviews
+    reviews = []
+    with open('reviews.csv', 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            next(reader)  # skip header row
+            for row in reader:
+                review = (Review(row[0], row[1], row[2], row[3], row[4]))
+                reviews.append(review)
+                
 @app.route('/user/home')
 def index_user(): 
     global groups
@@ -149,36 +186,6 @@ def index_user():
                                     username = username)
     return render_template("index_user.html",groups=groups)
     
-    
-class ReviewForm(FlaskForm):
-    subject = StringField('Subject', validators=[DataRequired()])
-    group_name = StringField('Group Name', validators=[DataRequired()])        
-    member_name_you_review = StringField('Member Name', validators=[DataRequired()])
-    review = StringField('Review', validators=[DataRequired()])
-    submit = SubmitField('Send')
-
-if not os.path.exists('reviews.csv'):
-    with open('reviews.csv', 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(['Name', 'Group Name', 'Subject', 'Member Names You Review', 'Review'])  # header row
-
-def add_review_to_csv(username, review):
-    with open('reviews.csv', 'a', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow([username, review.group_name, review.subject, review.member_name_you_review, review.review])
-
-class Review:
-    def __init__(self, username, subject, group_name, member_names_you_review, review):
-        self.username = username
-        self.subject = subject
-        self.group_name = group_name
-        self.member_name_you_review = member_names_you_review
-        self.review = review
-        
-    def __repr__(self):
-        return f'Group({self.username}, {self.subject}, {self.group_name}, {self.member_name_you_review}, {self.review})'
-    
-
 @app.route('/user/review', methods=['GET', 'POST'])
 def user_review():
     form = ReviewForm()
@@ -215,17 +222,26 @@ def login_admin():
 
 @app.route('/admin/home')
 def index_admin():
-    global groups
-    save()
+    global groups, reviews
+    username = session.get('username')
+    save_reviews()
+    save_groups()
     groups_count = {"Mini IT Project": 0, "Academic English": 0, "Introduction To Physics": 0}
     for group in groups:
         groups_count[group.subject] += 1
-        
     
-    username = session.get('username')
+    with open('lecturer.csv', mode='r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            if row['username'] == username:
+                subject = row['subject']
+                    
+            
     return render_template("index_admin.html",
                             groups = groups,
                             groups_count = groups_count,
+                            reviews = reviews,
+                            subject = subject,
                             username = username)
 #Admin create group
 
@@ -277,7 +293,7 @@ def create_group():
             group = Group(form.group_name.data, form.group_leader.data, form.subject.data, form.lecturer.data, form.number_of_members.data, member_names)
             add_group_to_csv(group, member_names)
             flash('Group created successfully!')
-            return redirect(url_for('groups_list'))
+            return redirect(url_for('create_group'))
     return render_template('admin_create.html',number_of_members=form.number_of_members.data if form.number_of_members.data else 0, form=form, group=group if group else {}) 
 
 @app.route("/admin/groups_list")

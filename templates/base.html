@@ -5,32 +5,7 @@
     <link href="{{ url_for('static',filename='css/style.css')}}" rel="stylesheet" > 
     <title>DearPeer</title> 
 </head>
-<div class="navigation">
-    <div class="user-image">
-        <img src="{{ url_for('static',filename='images/user.png')}}" alt="user">
-        <h3>{{ username }}</h3>
-    </div>
-    <div class="not-top-navigation">
-        <div class="moodle">
-            <img src="{{ url_for('static',filename='images/moodle.png')}}" alt="moodle">
-            <p>CONNECTED/NOT CONNECTED</p>
-        </div>
-        <div class="bottom-navigation">
-            <div class="notification">
-                <img src="{{ url_for('static',filename='images/notification.png')}}" alt="notification">
-                <a href="/templates/notification.html">NOTIFICATION</a>
-            </div>
-            <div class="new-group">
-                <img src="{{ url_for('static',filename='images/new-group.png')}}" alt="new-group">
-                <a href="/templates/new_group.html">NEW GROUP</a>
-            </div>
-            <div class="new-review">
-                <img src="{{ url_for('static',filename='images/new-review.png')}}" alt="new-review">
-                <a href="/templates/review.html">NEW REVIEW</a>
-            </div>
-        </div>
-    </div>
-</div>
+
 {% block content %}
 
 {% endblock %}

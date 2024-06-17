@@ -5,11 +5,11 @@
     <div class="homepage-left">
         <h1>WELCOME, {{ username }}!!</h1>
         
-        {% for subject in ["Mini IT Project", "Academic English", "Introduction To Physics"] %}
-            <h3>{{ subject }}: {{ groups_count[subject] }} Groups</h3>
+        {% for subjects in ["Mini IT Project", "Academic English", "Introduction To Physics"] %}
+            <h3>{{ subjects }}: {{ groups_count[subjects] }} Groups</h3>
             <ul>
             {% for group in groups %}
-                {% if group.subject == subject %}
+                {% if group.subject == subjects %}
                     <li>
                         <a href="{{url_for('update_group', group_name=group.group_name)}}">{{ group.group_name }}</a> (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }}) - <a href="{{url_for('delete_group', group_name=group.group_name, subject=subject)}}">Delete</a>
                     </li>
@@ -19,10 +19,19 @@
         {% endfor %}
 
 
-        <h3>Ongoing Review</h3>
-        
-        <h3>Completed Review</h3>
+        <h3>View Review By Student</h3>
+        <ul>
+            {% for review in reviews %}
+                {% if review.subject == subject %}
+                    <li>
+                        (Student Name:{{review.username}},Group Name:{{review.group_name}},Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
         </br>
+
+        <a href="{{url_for('create_group')}}">Create Group</a>
 
     </div>
 </div>
