@@ -3,6 +3,7 @@
 {% block content %}
 <div class="homepage">
     <div class="homepage-left">
+        <a href="{{ url_for('home') }}">Sign Out</a>
         <h1>WELCOME, {{ username }}!!</h1>
         
         <h3>Mini IT Project</h3>
@@ -66,7 +67,7 @@
             {% for review in reviews %}
               
                     <li>
-                        (Student Name:{{review.username}},Group Name:{{review.group_name}},Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
+                        (Student Name:{{review.username}}, Subject:{{review.subject}}, Group Name:{{review.group_name}}, Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
                     </li>
                 
             {% endfor %}

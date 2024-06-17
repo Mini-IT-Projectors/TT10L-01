@@ -62,6 +62,15 @@ class ReviewForm(FlaskForm):
     review = StringField('Review', validators=[DataRequired()])
     submit = SubmitField('Send')
 
+class Lecturer:
+    def __init__(self, username, subject,password):
+        self.username = username
+        self.subject = subject
+        self.password = password
+    
+    def __repr__(self):
+        return f'Lecturer({self.username}, {self.subject}, {self.password})'
+
 if not os.path.exists('reviews.csv'):
     with open('reviews.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -73,15 +82,15 @@ def add_review_to_csv(username, review):
         writer.writerow([username, review.group_name, review.subject, review.member_name_you_review, review.review])
 
 class Review:
-    def __init__(self, username, subject, group_name, member_names_you_review, review):
+    def __init__(self, username, group_name, subject, member_names_you_review, review):
         self.username = username
-        self.subject = subject
         self.group_name = group_name
+        self.subject = subject
         self.member_name_you_review = member_names_you_review
         self.review = review
         
     def __repr__(self):
-        return f'Review({self.username}, {self.subject}, {self.group_name}, {self.member_name_you_review}, {self.review})'
+        return f'Review({self.username}, {self.group_name}, {self.subject}, {self.member_name_you_review}, {self.review})'
  
 #Read Student Name    
 def check_user(username, password):
@@ -172,7 +181,7 @@ def save_reviews():
             for row in reader:
                 review = (Review(row[0], row[1], row[2], row[3], row[4]))
                 reviews.append(review)
-                
+           
 @app.route('/user/home')
 def index_user(): 
     global groups, reviews
@@ -230,13 +239,12 @@ def index_admin():
     groups_count = {"Mini IT Project": 0, "Academic English": 0, "Introduction To Physics": 0, 'Mathematics III' : 0, 'Critical Thinking' : 0, 'Introduction To Digital System' : 0}
     for group in groups:
         groups_count[group.subject] += 1
-    
     with open('lecturer.csv', mode='r') as file:
-        csv_reader = csv.DictReader(file)
+        csv_reader = csv.reader(file)
         for row in csv_reader:
-            if row['username'] == username:
-                subject = row['subject']
-                    
+            lecturer = (Lecturer(row[0], row[1], row[2]))
+            if lecturer.username == username:
+                subject = lecturer.subject                       
             
     return render_template("index_admin.html",
                             groups = groups,

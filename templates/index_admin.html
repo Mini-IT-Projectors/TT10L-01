@@ -3,30 +3,33 @@
 {% block content %}
 <div class="homepage">
     <div class="homepage-left">
+        <a href="{{ url_for('home') }}">Sign Out</a>
         <h1>WELCOME, {{ username }}!!</h1>
         
         {% for subjects in ["Mini IT Project", "Academic English", "Introduction To Physics",'Introduction To Digital System', 'Critical Thinking', 'Mathematics III'] %}
-            <h3>{{ subjects }}: {{ groups_count[subjects] }} Groups</h3>
-            <ul>
-            {% for group in groups %}
-                {% if group.subject == subjects %}
-                    <li>
-                        <a href="{{url_for('update_group', group_name=group.group_name)}}">{{ group.group_name }}</a> (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }}) - <a href="{{url_for('delete_group', group_name=group.group_name, subject=subject)}}">Delete</a>
-                    </li>
-                {% endif %}
-            {% endfor %}
-            </ul>
+            {% if subject == subjects %}    
+                <h3>{{ subjects }}: {{ groups_count[subjects] }} Groups</h3>
+                <ul>
+                {% for group in groups %}
+                    {% if group.subject == subjects %}
+                        <li>
+                            <a href="{{url_for('update_group', group_name=group.group_name)}}">{{ group.group_name }}</a> (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }}) - <a href="{{url_for('delete_group', group_name=group.group_name, subject=subject)}}">Delete</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                </ul>
+            {% endif %}
         {% endfor %}
 
 
         <h3>View Review By Student</h3>
         <ul>
             {% for review in reviews %}
-                
+               
                     <li>
-                        (Student Name:{{review.username}},Group Name:{{review.group_name}},Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
+                        (Student Name:{{review.username}}, Subject:{{review.subject}}, Group Name:{{review.group_name}},Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
                     </li>
-                
+              
             {% endfor %}
         </ul>
         </br>
