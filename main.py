@@ -175,16 +175,17 @@ def save_reviews():
                 
 @app.route('/user/home')
 def index_user(): 
-    global groups
+    global groups, reviews
+    save_reviews()
+    save_groups()
     username = session.get('username')
-    with open('groups.csv', mode='r') as file:
-        csv_reader = csv.DictReader(file)
-        for row in csv_reader:
-            if row["Group Leader"] == username or username in row['Member Names']:
-                return render_template("index_user.html",
-                                    groups = groups,
-                                    username = username)
-    return render_template("index_user.html",groups=groups)
+    for group in groups:
+        if group.group_leader == username or username in group.member_names:
+            return render_template("index_user.html",
+                                groups = groups,
+                                reviews=reviews,
+                                username = username)
+    return render_template("index_user.html",groups=groups,reviews=reviews)
     
 @app.route('/user/review', methods=['GET', 'POST'])
 def user_review():
@@ -226,7 +227,7 @@ def index_admin():
     username = session.get('username')
     save_reviews()
     save_groups()
-    groups_count = {"Mini IT Project": 0, "Academic English": 0, "Introduction To Physics": 0}
+    groups_count = {"Mini IT Project": 0, "Academic English": 0, "Introduction To Physics": 0, 'Mathematics III' : 0, 'Critical Thinking' : 0, 'Introduction To Digital System' : 0}
     for group in groups:
         groups_count[group.subject] += 1
     

@@ -5,7 +5,7 @@
     <div class="homepage-left">
         <h1>WELCOME, {{ username }}!!</h1>
         
-        {% for subjects in ["Mini IT Project", "Academic English", "Introduction To Physics"] %}
+        {% for subjects in ["Mini IT Project", "Academic English", "Introduction To Physics",'Introduction To Digital System', 'Critical Thinking', 'Mathematics III'] %}
             <h3>{{ subjects }}: {{ groups_count[subjects] }} Groups</h3>
             <ul>
             {% for group in groups %}
@@ -22,11 +22,11 @@
         <h3>View Review By Student</h3>
         <ul>
             {% for review in reviews %}
-                {% if review.subject == subject %}
+                
                     <li>
                         (Student Name:{{review.username}},Group Name:{{review.group_name}},Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
                     </li>
-                {% endif %}
+                
             {% endfor %}
         </ul>
         </br>
