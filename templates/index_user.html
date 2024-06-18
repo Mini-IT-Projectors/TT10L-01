@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="homepage">
-    <div class="homepage-left">
+<div class="container">
         <a href="{{ url_for('home') }}">Sign Out</a>
         <h1>WELCOME, {{ username }}!!</h1>
         
@@ -77,8 +76,6 @@
         <a href="{{ url_for('user_review') }}">Make Review</a>
 
         </br>
-
-    </div>
 </div>
 
 {% endblock %}

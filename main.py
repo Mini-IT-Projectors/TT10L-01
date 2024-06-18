@@ -6,12 +6,18 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, IntegerField, FieldList, SelectField
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired,EqualTo
 import pandas as pd
 
 # Create a Flask Instance
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'cbjgdxgyjnges'
+
+class RegisterForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Register')
 
 class GroupForm(FlaskForm):
     group_name = StringField('Group Name', validators=[DataRequired()])
@@ -144,23 +150,12 @@ def check_group(subject,group_name,member_name):
             if row['Group Name'] == group_name and row['Subject'] == subject and member_name in row['Member Names']:
                 return True
     return False
-@app.route('/')
-def home():
-    return render_template('home.html', title='Peer Review System')
 
-@app.route('/user_login', methods=['GET', 'POST'])
-def login_user():
-    form = LoginForm()
-    if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        if check_user(username, password):
-            flash('Login successful!', 'success')
-            session['username'] = username
-            return redirect(url_for('index_user'))
-        else:
-            flash('Invalid username or password', 'danger')
-    return render_template('login_user.html', title='Login', form=form)
+def add_user(username, password):
+    with open('users.csv', mode='a', newline='') as file:
+        fieldnames = ['username', 'password']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writerow({'username': username, 'password': password})
 
 def save_groups():
     global groups
@@ -181,7 +176,38 @@ def save_reviews():
             for row in reader:
                 review = (Review(row[0], row[1], row[2], row[3], row[4]))
                 reviews.append(review)
-           
+@app.route('/')
+def home():
+    return render_template('home.html', title='Peer Review System')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        if check_username(username):
+            flash('Username already exists. Please choose a different username.', 'danger')
+        else:
+            add_user(username, password)
+            flash('Registration successful! You can now log in.', 'success')
+            return redirect(url_for('login_user'))
+    return render_template('register.html', title='Register', form=form)
+
+@app.route('/user_login', methods=['GET', 'POST'])
+def login_user():
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        if check_user(username, password):
+            flash('Login successful!', 'success')
+            session['username'] = username
+            return redirect(url_for('index_user'))
+        else:
+            flash('Invalid username or password', 'danger')
+    return render_template('login_user.html', title='Student Login', form=form)
+
 @app.route('/user/home')
 def index_user(): 
     global groups, reviews
@@ -194,7 +220,7 @@ def index_user():
                                 groups = groups,
                                 reviews=reviews,
                                 username = username)
-    return render_template("index_user.html",groups=groups,reviews=reviews)
+    return render_template("index_user.html",groups=groups,reviews=reviews,username=username)
     
 @app.route('/user/review', methods=['GET', 'POST'])
 def user_review():
@@ -228,7 +254,7 @@ def login_admin():
             return redirect(url_for('index_admin'))
         else:
             flash('Invalid username or password', 'danger')
-    return render_template('login_admin.html', title='Login', form=form)
+    return render_template('login_admin.html', title='Lecturer Login', form=form)
 
 @app.route('/admin/home')
 def index_admin():
@@ -390,3 +416,6 @@ def page_not_found(e):
 @app.errorhandler(500)
 def page_not_found(e):
     return render_template("500.html"), 500
+
+if __name__ == '__main__':
+    app.run(debug=True)
