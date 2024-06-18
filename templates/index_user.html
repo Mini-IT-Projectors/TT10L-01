@@ -2,80 +2,86 @@
 
 {% block content %}
 <div class="container">
-        <a href="{{ url_for('home') }}">Sign Out</a>
-        <h1>WELCOME, {{ username }}!!</h1>
-        
-        <h3>Mini IT Project</h3>
-        {% for group in groups %}
-            {% if group.subject == "Mini IT Project" and (group.group_leader == username or username in group.member_names) %}
-                <li>
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                    
-                </li>
-            {% endif %}
-        {% endfor %}
-
-        <h3>Academic English</h3>
-        {% for group in groups %}
-            {% if group.subject == "Academic English" and (group.group_leader == username or username in group.member_names)%}
-                <li>
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                </li>
-            {% endif %}
-        {% endfor %}
-
-        <h3>Introduction To Physics</h3>
-        {% for group in groups %}
-            {% if group.subject == "Introduction To Physics" and (group.group_leader == username or username in group.member_names)%}
-                <li>
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                </li>
-            {% endif %}
-        {% endfor %}
-
-        <h3>Introduction To Digital System</h3>
-        {% for group in groups %}
-            {% if group.subject == "Introduction To Digital System" and (group.group_leader == username or username in group.member_names)%}
-                <li>
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                </li>
-            {% endif %}
-        {% endfor %}
-
-        <h3>Critical Thinking</h3>
-        {% for group in groups %}
-            {% if group.subject == "Critical Thinking" and (group.group_leader == username or username in group.member_names)%}
-                <li>
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                </li>
-            {% endif %}
-        {% endfor %}
-
-        <h3>Mathematics III</h3>
-        {% for group in groups %}
-            {% if group.subject == "Mathematics III" and (group.group_leader == username or username in group.member_names)%}
-                <li>
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                </li>
-            {% endif %}
-        {% endfor %}
-
-
-        <h3>View Review From Other Student</h3>
-        <ul>
-            {% for review in reviews %}
-              
-                    <li>
-                        (Student Name:{{review.username}}, Subject:{{review.subject}}, Group Name:{{review.group_name}}, Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
-                    </li>
+    <a href="{{ url_for('home') }}">Sign Out</a>
+    <h1>WELCOME, {{ username }}!!</h1>
+    
+    <h3>Mini IT Project</h3>
+    {% for group in groups %}
+        {% if group.subject == "Mini IT Project" and (group.group_leader == username or username in group.member_names) %}
+            <li>
+                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
                 
-            {% endfor %}
-        </ul>
-        </br>
+            </li>
+        {% endif %}
+    {% endfor %}
 
-        <a href="{{ url_for('user_review') }}">Make Review</a>
+    <h3>Academic English</h3>
+    {% for group in groups %}
+        {% if group.subject == "Academic English" and (group.group_leader == username or username in group.member_names)%}
+            <li>
+                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+            </li>
+        {% endif %}
+    {% endfor %}
 
-        </br>
+    <h3>Introduction To Physics</h3>
+    {% for group in groups %}
+        {% if group.subject == "Introduction To Physics" and (group.group_leader == username or username in group.member_names)%}
+            <li>
+                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+            </li>
+        {% endif %}
+    {% endfor %}
+
+    <h3>Introduction To Digital System</h3>
+    {% for group in groups %}
+        {% if group.subject == "Introduction To Digital System" and (group.group_leader == username or username in group.member_names)%}
+            <li>
+                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+            </li>
+        {% endif %}
+    {% endfor %}
+
+    <h3>Critical Thinking</h3>
+    {% for group in groups %}
+        {% if group.subject == "Critical Thinking" and (group.group_leader == username or username in group.member_names)%}
+            <li>
+                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+            </li>
+        {% endif %}
+    {% endfor %}
+
+    <h3>Mathematics III</h3>
+    {% for group in groups %}
+        {% if group.subject == "Mathematics III" and (group.group_leader == username or username in group.member_names)%}
+            <li>
+                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+            </li>
+        {% endif %}
+    {% endfor %}
+
+
+    <h3>View Review From Other Student</h3>
+    <div class="scroll-bg">
+        <div class="scroll-div">
+            <div class="scroll-object">
+    <ul>
+        {% for review in reviews %}
+            
+                <li>
+                    (Student Name:{{review.username}}, Subject:{{review.subject}}, Group Name:{{review.group_name}}, Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
+                </li>
+            
+        {% endfor %}
+    </ul>
+            </div>
+        </div>
+    </div>
+    </br>
+
+    <a href="{{ url_for('user_review') }}">Make Review</a>
+
+    </br>
 </div>
 
 {% endblock %}
