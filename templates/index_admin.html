@@ -1,42 +1,76 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="homepage">
-    <div class="homepage-left">
-        <a href="{{ url_for('home') }}">Sign Out</a>
-        <h1>WELCOME, {{ username }}!!</h1>
-        
-        {% for subjects in ["Mini IT Project", "Academic English", "Introduction To Physics",'Introduction To Digital System', 'Critical Thinking', 'Mathematics III'] %}
-            {% if subject == subjects %}    
-                <h3>{{ subjects }}: {{ groups_count[subjects] }} Groups</h3>
-                <ul>
-                {% for group in groups %}
-                    {% if group.subject == subjects %}
-                        <li>
-                            <a href="{{url_for('update_group', group_name=group.group_name)}}">{{ group.group_name }}</a> (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }}) - <a href="{{url_for('delete_group', group_name=group.group_name, subject=subject)}}">Delete</a>
-                        </li>
-                    {% endif %}
-                {% endfor %}
-                </ul>
-            {% endif %}
-        {% endfor %}
-
-
-        <h3>View Review By Student</h3>
-        <ul>
-            {% for review in reviews %}
-               
-                    <li>
-                        (Student Name:{{review.username}}, Subject:{{review.subject}}, Group Name:{{review.group_name}},Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
-                    </li>
-              
-            {% endfor %}
-        </ul>
-        </br>
-
-        <a href="{{url_for('create_group')}}">Create Group</a>
-
-    </div>
+<div class="container">
+    <a href="{{ url_for('home') }}">Sign Out</a> <a href="{{url_for('create_group')}}">Create Group</a>
 </div>
+<div class="container">
+    <h1 class="username">WELCOME, {{ username }}!!</h1>
+    <div class="container-subject">
+    <ul>
+        {% for subjects in ["Mini IT Project", "Academic English", "Introduction To Physics",'Introduction To Digital System', 'Critical Thinking', 'Mathematics III'] %}
+            {% for subject in sub %}
+                {% if subject == subjects %}    
+                <li>
+                    <button onclick="showGroups('{{subjects}}')" class="dropbtn">{{ subjects }}: {{ groups_count[subjects] }} Group</button>
+                </li>
+                    <div id="{{subjects}}Groups" class="dropdown-content" style="display: none;">
+                        <ul>
+                        {% for group in groups %}
+                            {% if group.subject == subjects %}
+                                <li>
+                                    <a href="{{url_for('update_group', group_name=group.group_name)}}">{{ group.group_name }}</a> (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }}) - <a href="{{url_for('delete_group', group_name=group.group_name, subject=subject)}}">Delete</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </ul>
+    </div>
 
+    <h3>View Review By Student</h3>
+    <div class="scroll-bg">
+        <div class="scroll-div">
+            <div class="scroll-object">
+    <ul>
+        {% for review in reviews %}
+            
+                <li>
+                    {{review.username}} from {{review.subject}}, Mention {{review.member_name_you_review}} that {{review.review}}
+                </li>
+            
+        {% endfor %}
+    </ul>
+            </div>  
+        </div>
+    </div>
+    </br>
+</div>
+<script>
+    function showGroups(subject) {
+        var groupsDiv = document.getElementById(subject + "Groups");
+        if (groupsDiv.style.display === "none") {
+            groupsDiv.style.display = "block";
+        } else {
+            groupsDiv.style.display = "none";
+        }
+    }
+      
+      // Close the dropdown menu if the user clicks outside of it
+      window.onclick = function(event) {
+        if (!event.target.matches('.dropbtn')) {
+          var dropdowns = document.getElementsByClassName("dropdown-content");
+          var i;
+          for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+              openDropdown.classList.remove('show');
+            }
+          }
+        }
+      }
+</script>
 {% endblock %}

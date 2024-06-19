@@ -1,24 +1,50 @@
+/* Minimalist Style CSS */
+
+/* Basic resets */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
+    line-height: 1.6;
     margin: 0;
     padding: 0;
     background-color: #f5f5f5;
+    color: #333;
+    padding: 20px;
 }
 
 .container {
+    max-width: 800px;
     width: 80%;
     margin: 0 auto;
     padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
     background-color: #ffffff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
     border-radius: 8px;
 }
 
-h1 {
+header, footer {
     color: #333;
     text-align: center;
+    padding: 20px 0;
+    background-color: #333;
+    color: #fff;
     margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 10px 0 10px;
+    font-weight: 300;
+    color: #222;
+    text-align: center;
 }
 
 form {
@@ -77,6 +103,10 @@ form input[type="submit"]:hover {
     border-radius: 4px;
 }
 
+p {
+    margin: 10px 0;
+}
+
 .profile-picture {
     width: 100px;
     height: 100px;
@@ -87,6 +117,7 @@ form input[type="submit"]:hover {
 }
 
 a {
+    color: #3498db;
     color: #007BFF;
     text-decoration: none;
 }
@@ -95,6 +126,9 @@ a:hover {
     text-decoration: underline;
 }
 
+ul {
+    list-style: none;
+}
 .text-center {
     text-align: center;
 }
@@ -119,6 +153,28 @@ body {
     background-color: #f5f5f5;
 }
 
+ul li {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: #e7e7e7;
+    border-radius: 3px;
+}
+
+.group-list , h3{
+    color: #ffffff;
+    text-align: center;
+}
+
+h3 {
+    font-weight: 200;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.username {
+    text-transform :uppercase; 
+}
+
 .container {
     width: 80%;
     margin: 0 auto;
@@ -129,18 +185,85 @@ body {
     border-radius: 8px;
 }
 
+.container-subject {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #2fb3d4;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    border-radius: 8px;
+}
+
+.dropbtn {
+    background-color: #2fb3d4;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    font-weight: 300;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  
+  /* Dropdown button on hover & focus */
+  .dropbtn:hover, .dropbtn:focus {
+    background-color: #2fb3d4;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content li {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content li:hover {background-color: #ddd;}
+  
+  /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+  .show {display:block;}
+
+button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #3498db;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
 h1 {
     color: #333;
     text-align: center;
     margin-bottom: 20px;
 }
 
+button:hover {
+    background-color: #2980b9;
+}
 form {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
 
+input, textarea, select {
+    width: 100%;
+}
 form label {
     font-weight: bold;
 }
@@ -150,23 +273,31 @@ form input[type="password"],
 form input[type="file"],
 form textarea {
     padding: 10px;
+    margin: 10px 0;
     font-size: 16px;
     border: 1px solid #ddd;
+    border-radius: 3px;
     border-radius: 4px;
 }
 
+input:focus, textarea:focus, select:focus {
+    border-color: #3498db;
+}
 form textarea {
     resize: vertical;
 }
 
+.flash {
 form input[type="submit"] {
     background-color: #007BFF;
     color: white;
     padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
     font-size: 16px;
     border: none;
     border-radius: 4px;
-    cursor: pointer;
+    cursor: pointer;}
 }
 
 form input[type="submit"]:hover {
@@ -174,6 +305,8 @@ form input[type="submit"]:hover {
 }
 
 .flash-success {
+    background-color: #dff0d8;
+    color: #3c763d;
     color: #155724;
     background-color: #d4edda;
     border-color: #c3e6cb;
@@ -183,6 +316,8 @@ form input[type="submit"]:hover {
 }
 
 .flash-danger {
+    background-color: #f2dede;
+    color: #a94442;
     color: #721c24;
     background-color: #f8d7da;
     border-color: #f5c6cb;
@@ -191,11 +326,18 @@ form input[type="submit"]:hover {
     border-radius: 4px;
 }
 
+.form-group {
+    margin-bottom: 15px;
+}
 a {
     color: #007BFF;
     text-decoration: none;
 }
 
+label {
+    display: block;
+    margin-bottom: 5px;
+}
 a:hover {
     text-decoration: underline;
 }
@@ -213,14 +355,14 @@ a:hover {
 
 /*Scroll Bar For review*/
 .scroll-bg {
-    background-color: #f5f5f5;
-    margin: 10% auto;
+    background-color: #2fb3d4;
+    margin: 10px auto;
     padding: 20px;
     border-radius: 50px;
 }
 
 .scroll-div {
-    background-color: #f5f5f5;
+    background-color: #2fb3d4;
     height: 300px;
     overflow: hidden;
     overflow-y: scroll;

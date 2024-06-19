@@ -2,66 +2,80 @@
 
 {% block content %}
 <div class="container">
-    <a href="{{ url_for('home') }}">Sign Out</a>
-    <h1>WELCOME, {{ username }}!!</h1>
+    <a href="{{ url_for('home') }}">Sign Out</a> <a href="{{ url_for('user_review') }}">Make Review</a>
+</div>
+<div class="container">
+    <h1 class="username">WELCOME, {{ username }}!!</h1>
     
-    <h3>Mini IT Project</h3>
-    {% for group in groups %}
-        {% if group.subject == "Mini IT Project" and (group.group_leader == username or username in group.member_names) %}
-            <li>
-                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                
-            </li>
-        {% endif %}
-    {% endfor %}
+    <div class="container-subject">
+        <h3>Mini IT Project</h3>
+        {% for group in groups %}
+            {% if group.subject == "Mini IT Project" and (group.group_leader == username or username in group.member_names) %}
+                <li class="group-list">
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                    
+                </li>
+            {% endif %}
+        {% endfor %}
+    </div>
 
-    <h3>Academic English</h3>
-    {% for group in groups %}
-        {% if group.subject == "Academic English" and (group.group_leader == username or username in group.member_names)%}
-            <li>
-                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-            </li>
-        {% endif %}
-    {% endfor %}
+    <div class="container-subject">
+        <h3>Academic English</h3>
+        {% for group in groups %}
+            {% if group.subject == "Academic English" and (group.group_leader == username or username in group.member_names)%}
+                <li class="group-list">
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                </li>
+            {% endif %}
+        {% endfor %}
+    </div>
 
-    <h3>Introduction To Physics</h3>
-    {% for group in groups %}
-        {% if group.subject == "Introduction To Physics" and (group.group_leader == username or username in group.member_names)%}
-            <li>
-                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-            </li>
-        {% endif %}
-    {% endfor %}
+    <div class="container-subject">
+        <h3>Introduction To Physics</h3>
+        {% for group in groups %}
+            {% if group.subject == "Introduction To Physics" and (group.group_leader == username or username in group.member_names)%}
+                <li class="group-list">
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                </li>
+            {% endif %}
+        {% endfor %}
+    </div>
 
-    <h3>Introduction To Digital System</h3>
-    {% for group in groups %}
-        {% if group.subject == "Introduction To Digital System" and (group.group_leader == username or username in group.member_names)%}
-            <li>
-                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-            </li>
-        {% endif %}
-    {% endfor %}
+    <div class="container-subject">
+        <h3>Introduction To Digital System</h3>
+        {% for group in groups %}
+            {% if group.subject == "Introduction To Digital System" and (group.group_leader == username or username in group.member_names)%}
+                <li class="group-list">
+                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                </li>
+            {% endif %}
+        {% endfor %}
+    </div>
 
-    <h3>Critical Thinking</h3>
-    {% for group in groups %}
-        {% if group.subject == "Critical Thinking" and (group.group_leader == username or username in group.member_names)%}
-            <li>
-                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-            </li>
-        {% endif %}
-    {% endfor %}
+    <div class="container-subject">
+        <h3>Critical Thinking</h3>
+            {% for group in groups %}
+                {% if group.subject == "Critical Thinking" and (group.group_leader == username or username in group.member_names)%}
+                    <li class="group-list">
+                        {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                    </li>
+                {% endif %}
+            {% endfor %}
+    </div>
 
-    <h3>Mathematics III</h3>
-    {% for group in groups %}
-        {% if group.subject == "Mathematics III" and (group.group_leader == username or username in group.member_names)%}
-            <li>
-                {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-            </li>
-        {% endif %}
-    {% endfor %}
+    <div class="container-subject">
+        <h3>Mathematics III</h3>
+            {% for group in groups %}
+                {% if group.subject == "Mathematics III" and (group.group_leader == username or username in group.member_names)%}
+                    <li class="group-list">
+                        {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                    </li>
+                {% endif %}
+            {% endfor %}
+    </div>
 
 
-    <h3>View Review From Other Student</h3>
+    <h2>View Review From Other Student</h2>
     <div class="scroll-bg">
         <div class="scroll-div">
             <div class="scroll-object">
@@ -69,7 +83,7 @@
         {% for review in reviews %}
             
                 <li>
-                    (Student Name:{{review.username}}, Subject:{{review.subject}}, Group Name:{{review.group_name}}, Group Member That Been Review:{{review.member_name_you_review}},Review:{{review.review}})
+                    Someone from {{review.subject}}, Mention <a href="{{url_for('view_person', name=review.member_name_you_review)}}">{{review.member_name_you_review}}</a> that {{review.review}}
                 </li>
             
         {% endfor %}
@@ -78,10 +92,7 @@
         </div>
     </div>
     </br>
-
-    <a href="{{ url_for('user_review') }}">Make Review</a>
-
-    </br>
 </div>
 
 {% endblock %}
+

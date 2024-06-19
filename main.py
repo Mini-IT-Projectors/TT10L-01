@@ -88,15 +88,15 @@ def add_review_to_csv(username, review):
         writer.writerow([username, review.group_name, review.subject, review.member_name_you_review, review.review])
 
 class Review:
-    def __init__(self, username, group_name, subject, member_names_you_review, review):
+    def __init__(self, username, group_name, subject,  member_names_you_review, review):
         self.username = username
-        self.group_name = group_name
         self.subject = subject
+        self.group_name = group_name
         self.member_name_you_review = member_names_you_review
         self.review = review
         
     def __repr__(self):
-        return f'Review({self.username}, {self.group_name}, {self.subject}, {self.member_name_you_review}, {self.review})'
+        return f'Review({self.username}, {self.group_name}, {self.subject},  {self.member_name_you_review}, {self.review})'
  
 #Read Student Name    
 def check_user(username, password):
@@ -242,6 +242,16 @@ def user_review():
                            form=form,
                            review=review if review else {})
 
+@app.route('/user/view_<string:name>', methods = ['GET','POST'])
+def view_person(name):
+    global reviews
+    save_reviews()
+    for review in reviews:
+        if review.member_name_you_review == name:
+            return render_template("view_person.html", name = name,review=review)
+    username = session.get('username')
+    render_template("view_person.html",reviews=reviews,review =review, username=username)
+
 @app.route('/admin_login', methods=['GET', 'POST'])
 def login_admin():
     form = LoginForm()
@@ -259,6 +269,7 @@ def login_admin():
 @app.route('/admin/home')
 def index_admin():
     global groups, reviews
+    sub =[]
     username = session.get('username')
     save_reviews()
     save_groups()
@@ -270,13 +281,14 @@ def index_admin():
         for row in csv_reader:
             lecturer = (Lecturer(row[0], row[1], row[2]))
             if lecturer.username == username:
-                subject = lecturer.subject                       
+                subject = lecturer.subject
+                sub.append(subject)                 
             
     return render_template("index_admin.html",
                             groups = groups,
                             groups_count = groups_count,
                             reviews = reviews,
-                            subject = subject,
+                            sub = sub,
                             username = username)
 #Admin create group
 
