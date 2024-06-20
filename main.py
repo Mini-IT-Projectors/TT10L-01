@@ -51,7 +51,7 @@ def save_subject():
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
     submit = SubmitField('Register')
 
 class GroupForm(FlaskForm):
@@ -218,12 +218,18 @@ def register_user():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        if check_username(username):
+        confirm_password = form.confirm_password.data
+        
+        if check_username(username)== False:
+            if password == confirm_password:
+                add_user(username, password)
+                flash('Registration successful! You can now log in.', 'success')
+                return redirect(url_for('login_user'))
+            else:
+                flash('Passwords do not match', 'danger')
+        elif check_username(username) == True: 
             flash('Username already exists. Please choose a different username.', 'danger')
-        else:
-            add_user(username, password)
-            flash('Registration successful! You can now log in.', 'success')
-            return redirect(url_for('login_user'))
+
     return render_template('register_user.html', title='Register', form=form)
 
 @app.route('/register_lecturer', methods=['GET', 'POST'])
