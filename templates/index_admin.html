@@ -1,8 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <a href="{{ url_for('home') }}">Sign Out</a> <a href="{{url_for('create_group')}}">Create Group</a>
+<div class="nav-container">
+    <h2>DearPear</h2>
+    <nav>
+        <a href="{{ url_for('home') }}">Sign Out</a> 
+        <a href="{{url_for('create_group')}}">Create Group</a>
+    </nav>
 </div>
 <div class="container">
     <h1 class="username">WELCOME, {{ username }}!!</h1>

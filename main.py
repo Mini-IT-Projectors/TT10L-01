@@ -12,6 +12,41 @@ import pandas as pd
 # Create a Flask Instance
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'cbjgdxgyjnges'
+class Lecturer:
+    def __init__(self, username,password):
+        self.username = username
+        self.password = password
+    
+    def __repr__(self):
+        return f'Lecturer({self.username}, {self.password})'
+
+class LecturerSubject:
+    def __init__(self, username,subject):
+        self.username = username
+        self.subject = subject
+    
+    def __repr__(self):
+        return f'LecturerSubject({self.username}, {self.subject})'
+
+
+def save_lecturers():
+    global lecturers
+    lecturers = []
+    with open('lecturer.csv','r', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)
+        for row in reader:
+            lecturer = (Lecturer(row[0],row[1]))
+            lecturers.append(lecturer)
+
+def save_subject():
+    global subjects
+    subjects = []
+    with open('subjects.csv','r', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        next(reader)
+        for row in reader:
+            subjects.append(row[0])
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -20,25 +55,16 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Register')
 
 class GroupForm(FlaskForm):
+    global lecturers
+    save_lecturers()
+    save_subject()
     group_name = StringField('Group Name', validators=[DataRequired()])
     group_leader = StringField('Group Leader',validators=[DataRequired()])
     subject = SelectField('Subject', choices=[
-        ('Select Subject', 'Select Subject'),
-        ('Mini IT Project', 'Mini IT Project'),
-        ('Introduction To Physics', 'Introduction To Physics'),
-        ('Mathematics III', 'Mathematics III'),
-        ('Academic English', 'Academic English'),
-        ('Critical Thinking', 'Critical Thinking'),
-        ('Introduction To Digital System', 'Introduction To Digital System')
+        (subject, subject) for subject in subjects
     ], validators=[DataRequired()])
     lecturer = SelectField('Lecturer', choices=[
-        ('Select Lecturer', 'Select Lecturer'),
-        ('Suhaini Binti Nordin', 'Suhaini Binti Nordin'),
-        ('Zubair Hassan Tarif', 'Zubair Hassan Tarif'),
-        ('Munirah Binti Munawar Ali', 'Munirah Binti Munawar Ali'),
-        ('Khairi Shazwan Bin Dollmat', 'Khairi Shazwan Bin Dollmat'),
-        ('Muhammad Effendi Bin Ismail', 'Muhammad Effendi Bin Ismail'),
-        ('Mohammad Shadab Khan', 'Mohammad Shadab Khan')
+        (lecturer.username, lecturer.username) for lecturer in lecturers
     ], validators=[DataRequired()])
     number_of_members = IntegerField('Number of Members', validators=[DataRequired()])
     member_names = FieldList(StringField(f'Member Name', validators=[DataRequired()], min_entries=1))
@@ -62,20 +88,19 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 class ReviewForm(FlaskForm):
-    subject = StringField('Subject', validators=[DataRequired()])
+    subject = SelectField('Subject', choices=[
+        ('Select Subject', 'Select Subject'),
+        ('Mini IT Project', 'Mini IT Project'),
+        ('Introduction To Physics', 'Introduction To Physics'),
+        ('Mathematics III', 'Mathematics III'),
+        ('Academic English', 'Academic English'),
+        ('Critical Thinking', 'Critical Thinking'),
+        ('Introduction To Digital System', 'Introduction To Digital System')
+    ], validators=[DataRequired()])
     group_name = StringField('Group Name', validators=[DataRequired()])        
     member_name_you_review = StringField('Member Name', validators=[DataRequired()])
     review = StringField('Review', validators=[DataRequired()])
     submit = SubmitField('Send')
-
-class Lecturer:
-    def __init__(self, username, subject,password):
-        self.username = username
-        self.subject = subject
-        self.password = password
-    
-    def __repr__(self):
-        return f'Lecturer({self.username}, {self.subject}, {self.password})'
 
 if not os.path.exists('reviews.csv'):
     with open('reviews.csv', 'w', newline='') as csvfile:
@@ -157,6 +182,12 @@ def add_user(username, password):
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writerow({'username': username, 'password': password})
 
+def add_lecturer(username, password):
+    with open('lecturer.csv', mode='a', newline='') as file:
+        fieldnames = ['username', 'password']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writerow({'username': username,'password': password})
+        
 def save_groups():
     global groups
     groups = []
@@ -176,12 +207,13 @@ def save_reviews():
             for row in reader:
                 review = (Review(row[0], row[1], row[2], row[3], row[4]))
                 reviews.append(review)
+                     
 @app.route('/')
 def home():
     return render_template('home.html', title='Peer Review System')
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
+@app.route('/register_user', methods=['GET', 'POST'])
+def register_user():
     form = RegisterForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -192,7 +224,22 @@ def register():
             add_user(username, password)
             flash('Registration successful! You can now log in.', 'success')
             return redirect(url_for('login_user'))
-    return render_template('register.html', title='Register', form=form)
+    return render_template('register_user.html', title='Register', form=form)
+
+@app.route('/register_lecturer', methods=['GET', 'POST'])
+def register_lecturer():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        if check_lecturer(username):
+            flash('Username already exists. Please choose a different username.', 'danger')
+            return redirect(url_for('register_lecturer'))
+        else:
+            add_lecturer(username, password)
+            flash('Registration successful! You can now log in.', 'success')
+            return redirect(url_for('login_admin'))
+    return render_template('register_lecturer.html', title='Register', form=form)
 
 @app.route('/user_login', methods=['GET', 'POST'])
 def login_user():
@@ -276,10 +323,10 @@ def index_admin():
     groups_count = {"Mini IT Project": 0, "Academic English": 0, "Introduction To Physics": 0, 'Mathematics III' : 0, 'Critical Thinking' : 0, 'Introduction To Digital System' : 0}
     for group in groups:
         groups_count[group.subject] += 1
-    with open('lecturer.csv', mode='r') as file:
+    with open('lecturer_subject.csv', mode='r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
-            lecturer = (Lecturer(row[0], row[1], row[2]))
+            lecturer = (LecturerSubject(row[0], row[1]))
             if lecturer.username == username:
                 subject = lecturer.subject
                 sub.append(subject)                 

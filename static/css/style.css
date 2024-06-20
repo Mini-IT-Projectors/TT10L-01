@@ -12,7 +12,7 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    background-color: #f5f5f5;
+    background-color: #243033;
     color: #333;
     padding: 20px;
 }
@@ -22,7 +22,6 @@ body {
     width: 80%;
     margin: 0 auto;
     padding: 20px;
-    background-color: #fff;
     border-radius: 5px;
     background-color: #ffffff;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -195,6 +194,25 @@ h3 {
     border-radius: 8px;
 }
 
+.nav-container{
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+}
+.nav-container h2{
+    margin: 0 ;
+}
+
+nav{
+    margin-top: 9px;
+    align-items: flex-end;
+    width: 100%;
+}
+
+
 .dropbtn {
     background-color: #2fb3d4;
     color: white;
@@ -271,7 +289,10 @@ form label {
 form input[type="text"],
 form input[type="password"],
 form input[type="file"],
-form textarea {
+form textarea,
+form select,
+form input[type="int"],
+form  {
     padding: 10px;
     margin: 10px 0;
     font-size: 16px;
