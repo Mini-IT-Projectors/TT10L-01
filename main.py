@@ -222,14 +222,13 @@ def register_user():
         
         if check_username(username)== False:
             if password == confirm_password:
-                add_user(username, password)
                 flash('Registration successful! You can now log in.', 'success')
+                add_user(username, password)
                 return redirect(url_for('login_user'))
             else:
                 flash('Passwords do not match', 'danger')
         elif check_username(username) == True: 
             flash('Username already exists. Please choose a different username.', 'danger')
-
     return render_template('register_user.html', title='Register', form=form)
 
 @app.route('/register_lecturer', methods=['GET', 'POST'])
@@ -238,13 +237,18 @@ def register_lecturer():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        if check_lecturer(username):
+        confirm_password = form.confirm_password.data
+        
+        if check_lecturer(username)== False:
+            if password == confirm_password:
+                flash('Registration successful! You can now log in.', 'success')
+                add_lecturer(username, password)
+                return redirect(url_for('login_lecturer'))
+            else:
+                flash('Passwords do not match', 'danger')
+        elif check_lecturer(username) == True: 
             flash('Username already exists. Please choose a different username.', 'danger')
-            return redirect(url_for('register_lecturer'))
-        else:
-            add_lecturer(username, password)
-            flash('Registration successful! You can now log in.', 'success')
-            return redirect(url_for('login_admin'))
+
     return render_template('register_lecturer.html', title='Register', form=form)
 
 @app.route('/user_login', methods=['GET', 'POST'])
@@ -305,6 +309,20 @@ def view_person(name):
     username = session.get('username')
     render_template("view_person.html",reviews=reviews,review =review, username=username)
 
+@app.route('/login_lecturer', methods=['GET', 'POST'])
+def login_lecturer():
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        if check_lecturer(username, password):
+            flash('Login successful!', 'success')
+            session['username'] = username
+            return redirect(url_for('index_lecturer'))
+        else:
+            flash('Invalid username or password', 'danger')
+    return render_template('login_lecturer.html', title='Lecturer Login', form=form)
+
 @app.route('/admin_login', methods=['GET', 'POST'])
 def login_admin():
     form = LoginForm()
@@ -317,10 +335,10 @@ def login_admin():
             return redirect(url_for('index_admin'))
         else:
             flash('Invalid username or password', 'danger')
-    return render_template('login_admin.html', title='Lecturer Login', form=form)
+    return render_template('login_admin.html', title='Admin Login', form=form)
 
-@app.route('/admin/home')
-def index_admin():
+@app.route('/lecturer/home')
+def index_lecturer():
     global groups, reviews
     sub =[]
     username = session.get('username')
@@ -337,7 +355,7 @@ def index_admin():
                 subject = lecturer.subject
                 sub.append(subject)                 
             
-    return render_template("index_admin.html",
+    return render_template("index_lecturer.html",
                             groups = groups,
                             groups_count = groups_count,
                             reviews = reviews,
