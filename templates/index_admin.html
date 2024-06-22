@@ -6,24 +6,26 @@
     <nav>
         <a href="{{ url_for('home') }}">Sign Out</a> 
         <a href="{{url_for('create_group')}}">Create Group</a>
+        <a href="{{url_for('add_section')}}">Add Section</a>
+        <a href="{{url_for('add_subject')}}">Add Subject</a>
     </nav>
 </div>
 <div class="container">
     <h1 class="username">WELCOME, {{ username }}!!</h1>
     <div class="container-subject">
     <ul>
-        {% for subjects in ["Mini IT Project", "Academic English", "Introduction To Physics",'Introduction To Digital System', 'Critical Thinking', 'Mathematics III'] %}
+        {% for one_subjects in subjects %}
             {% for subject in sub %}
-                {% if subject == subjects %}    
+                {% if subject in one_subjects %}    
                 <li>
-                    <button onclick="showGroups('{{subjects}}')" class="dropbtn">{{ subjects }}: {{ groups_count[subjects] }} Group</button>
+                    <button onclick="showGroups('{{one_subjects}}')" class="dropbtn">{{ one_subjects }}: {{ groups_count[one_subjects] }} Group {{groups_count}} </button>
                 </li>
-                    <div id="{{subjects}}Groups" class="dropdown-content" style="display: none;">
+                    <div id="{{one_subjects}}Groups" class="dropdown-content" style="display: none;">
                         <ul>
                         {% for group in groups %}
-                            {% if group.subject == subjects %}
+                            {% if group.subject == one_subjects %}
                                 <li>
-                                    <a href="{{url_for('update_group', group_name=group.group_name)}}">{{ group.group_name }}</a> (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }}) - <a href="{{url_for('delete_group', group_name=group.group_name, subject=subject)}}">Delete</a>
+                                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Section: {{ group.lecturer_section }},{{ group.tutorial_section }} , Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }}) - <a href="{{url_for('delete_group', group_name=group.group_name, subject=subject)}}">Delete</a>
                                 </li>
                             {% endif %}
                         {% endfor %}
@@ -41,11 +43,11 @@
             <div class="scroll-object">
     <ul>
         {% for review in reviews %}
-            
+            {% if review.lecturer == username %}
                 <li>
                     {{review.username}} from {{review.subject}}, Mention {{review.member_name_you_review}} that {{review.review}}
                 </li>
-            
+            {% endif %}
         {% endfor %}
     </ul>
             </div>  

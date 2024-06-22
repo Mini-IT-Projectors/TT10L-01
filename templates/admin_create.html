@@ -14,6 +14,8 @@
             {{ form.group_leader.label }} {{ form.group_leader }}<br><br>
             {{ form.subject.label }} {{ form.subject }}<br><br>
             {{ form.lecturer.label }} {{ form.lecturer }}<br><br>
+            {{ form.lecturer_section.label }} {{ form.lecturer_section }}<br><br>
+            {{ form.tutorial_section.label }} {{ form.tutorial_section }}<br><br>
             {{ form.number_of_members.label }} {{ form.number_of_members }}<br><br>
             
             <div id="member-list">
@@ -26,6 +28,7 @@
             </div>
             {{ form.submit }}
         </form>
+        Doesn't have your subject? <a href="{{ add_subject }}"> Add Here </a> <br>     
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 <ul>
