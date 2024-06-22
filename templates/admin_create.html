@@ -2,9 +2,16 @@
 
 {% block content %}
 <div class="nav-container">
-    <h2>DearPear</h2> 
-    <a href="{{ url_for('home') }}">Sign Out</a>     
-    <a href="{{url_for('index_admin')}}">Back</a>
+    <h2>DearPear</h2>
+    <div class="dropdown">
+        <button class="dropbtn">Menu</button>
+        <div class="dropdown-nav">
+            <ul>
+                <li><a href="{{ url_for('home') }}">Sign Out</a></li>
+                <li><a href="{{url_for('index_admin')}}">Back</a></li>
+            </ul>
+        </div>
+    </div>
 </div>
 <div class="container">
     <h1>Create Group</h1>

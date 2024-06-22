@@ -370,7 +370,7 @@ def user_review():
                            review=review if review else {})
 
 @app.route('/lecturer_login', methods=['GET', 'POST'])
-def login_admin():
+def login_lecturer():
     form = LoginForm()
     if form.validate_on_submit():
         username = form.username.data
@@ -381,7 +381,7 @@ def login_admin():
             return redirect(url_for('index_admin'))
         else:
             flash('Invalid username or password', 'danger')
-    return render_template('login_admin.html', title='Admin Login', form=form)
+    return render_template('login_lecturer.html', title='Lecturer Login', form=form)
 
 @app.route('/lecturer/home')
 def index_admin():
@@ -392,11 +392,6 @@ def index_admin():
     save_groups()
     save_subject()
     groups = groups
-    for subject in subjects:
-        groups_count = {subject : 0}
-        for group in groups:
-            if group.subject in groups_count:
-                groups_count[group.subject] += 1
     with open('lecturer_subject.csv', mode='r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
@@ -406,10 +401,9 @@ def index_admin():
                 if subject not in sub:
                     sub.append(subject)                 
 
-    return render_template("index_admin.html",
+    return render_template("index_lecturer.html",
                             subjects = subjects,
                             groups = groups,
-                            groups_count = groups_count,
                             reviews = reviews,
                             sub = sub,
                             username = username)
