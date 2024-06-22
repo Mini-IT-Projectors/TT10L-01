@@ -100,7 +100,7 @@ class LecturerSection:
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
-    confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
     submit = SubmitField('Register')
 
 class GroupForm(FlaskForm):
@@ -281,12 +281,17 @@ def register_user():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        if check_username(username):
+        confirm_password = form.confirm_password.data
+        
+        if check_username(username)== False:
+            if password == confirm_password:
+                flash('Registration successful! You can now log in.', 'success')
+                add_user(username, password)
+                return redirect(url_for('login_user'))
+            else:
+                flash('Passwords do not match', 'danger')
+        elif check_username(username) == True: 
             flash('Username already exists. Please choose a different username.', 'danger')
-        else:
-            add_user(username, password)
-            flash('Registration successful! You can now log in.', 'success')
-            return redirect(url_for('login_user'))
     return render_template('register_user.html', title='Register', form=form)
 
 @app.route('/register_lecturer', methods=['GET', 'POST'])
@@ -295,13 +300,18 @@ def register_lecturer():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        if check_lecturer(username):
+        confirm_password = form.confirm_password.data
+        
+        if check_lecturer(username)== False:
+            if password == confirm_password:
+                flash('Registration successful! You can now log in.', 'success')
+                add_lecturer(username, password)
+                return redirect(url_for('login_lecturer'))
+            else:
+                flash('Passwords do not match', 'danger')
+        elif check_lecturer(username) == True: 
             flash('Username already exists. Please choose a different username.', 'danger')
-            return redirect(url_for('register_lecturer'))
-        else:
-            add_lecturer(username, password)
-            flash('Registration successful! You can now log in.', 'success')
-            return redirect(url_for('login_admin'))
+
     return render_template('register_lecturer.html', title='Register', form=form)
 
 @app.route('/user_login', methods=['GET', 'POST'])
@@ -371,7 +381,7 @@ def login_admin():
             return redirect(url_for('index_admin'))
         else:
             flash('Invalid username or password', 'danger')
-    return render_template('login_admin.html', title='Lecturer Login', form=form)
+    return render_template('login_admin.html', title='Admin Login', form=form)
 
 @app.route('/lecturer/home')
 def index_admin():

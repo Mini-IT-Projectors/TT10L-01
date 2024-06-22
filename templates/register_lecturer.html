@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <h2 class="mt-5">Register</h2>
+        <h2 class="mt-5">Register as Lecturer</h2>
         <form method="POST" action="">
             {{ form.hidden_tag() }}
             <div class="form-group">
@@ -27,7 +27,7 @@
                 {{ form.submit(class="btn btn-primary") }}
             </div>
         </form>
-        <p>Already have an account? <a href="{{ url_for('login_admin') }}">Login here</a>.</p>
+        <p>Already have an account? <a href="{{ url_for('login_lecturer') }}">Login here</a>.</p>
     </div>
 </body>
 </html>
