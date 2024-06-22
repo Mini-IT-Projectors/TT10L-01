@@ -52,7 +52,7 @@
         {% for review in reviews %}
             {% if review.lecturer == username %}
                 <li>
-                    {{review.username}} from {{review.subject}}, Mention {{review.member_name_you_review}} that {{review.review}}
+                    {{review.username}} from {{review.subject}}, Mention that his groupmate, {{review.member_names_you_review}} that {{review.review}}
                 </li>
             {% endif %}
         {% endfor %}

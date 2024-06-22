@@ -12,6 +12,26 @@ import pandas as pd
 # Create a Flask Instance
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'cbjgdxgyjnges'
+
+class Student:
+    def __init__(self, username,password):
+        self.username = username
+        self.password = password
+    
+    def __repr__(self):
+        return f'LecturerSection({self.username}, {self.password})'
+
+def save_student():
+    global students
+    students = []
+    with open('users.csv', 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            next(reader)  # skip header row
+            for row in reader:
+                student = (Student(row[0], row[1]))
+                students.append(student)
+    return students
+                
 class Lecturer:
     def __init__(self, username,password):
         self.username = username
@@ -105,13 +125,17 @@ class RegisterForm(FlaskForm):
 
 class GroupForm(FlaskForm):
     global lecturers,lecturers_section,tutorials_section,subjects
+    def __init__(self, *args, **kwargs):
+        super(GroupForm, self).__init__(*args, **kwargs)
+        self.subject.choices = [(subject, subject) for subject in save_subject()]
+        self.group_leader.choices = [(student.username, student.username) for student in save_student()]
+
+    save_student()
     save_lecturers()
     save_subject()
     group_name = StringField('Group Name', validators=[DataRequired()])
-    group_leader = StringField('Group Leader',validators=[DataRequired()])
-    subject = SelectField('Subject', choices=[
-        (subject, subject) for subject in subjects
-    ], validators=[DataRequired()])
+    group_leader = SelectField('Group Leader',validators=[DataRequired()])
+    subject = SelectField('Subject', validators=[DataRequired()])
     lecturer = SelectField('Lecturer', choices=[
         (lecturer.username, lecturer.username) for lecturer in lecturers
     ], validators=[DataRequired()])
@@ -270,7 +294,9 @@ def save_reviews():
             for row in reader:
                 review = (Review(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
                 reviews.append(review)
-                     
+
+
+                
 @app.route('/')
 def home():
     return render_template('home.html', title='Peer Review System')
@@ -333,6 +359,7 @@ def index_user():
     global groups, reviews, subjects
     sub = []
     save_reviews()
+    save_subject()
     save_groups()
     username = session.get('username')
     for group in groups:
@@ -485,8 +512,9 @@ def add_group_to_csv(group, member_names):
 
 @app.route("/lecturer/create_group", methods=['GET','POST'])
 def create_group():
-    global subjects
+    global subjects,students
     save_subject()
+    save_student()
     form = GroupForm()
     group = None
     if form.validate_on_submit():
@@ -502,7 +530,7 @@ def create_group():
             add_group_to_csv(group, member_names)
             flash('Group created successfully!')
             return redirect(url_for('create_group'))
-    return render_template('admin_create.html',number_of_members=form.number_of_members.data if form.number_of_members.data else 0, form=form, group=group if group else {}) 
+    return render_template('admin_create.html',number_of_members=form.number_of_members.data if form.number_of_members.data else 0, form=form, group=group if group else {},students=students) 
 
 @app.route("/lecturer/delete_group_<string:group_name>_<string:subject>", methods=['GET', 'POST'])
 def delete_group(group_name,subject):
