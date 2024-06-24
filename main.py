@@ -356,25 +356,30 @@ def login_user():
 
 @app.route('/user/home')
 def index_user(): 
-    global groups, reviews, subjects
+    global groups, subjects
     sub = []
-    save_reviews()
     save_subject()
     save_groups()
     username = session.get('username')
-    for group in groups:
-        if username == group.group_leader or username in group.member_names:
-            return render_template("index_user.html",
-                                groups = groups,
-                                reviews=reviews,
-                                subjects = subjects,
-                                username = username)
-        for subject in subjects:
-            if subject in group.subject:
-                one_subject = group.subject
-                if one_subject not in sub:
-                    sub.append(one_subject)
-    return render_template("index_user.html",groups=groups,reviews=reviews,subjects = subjects, sub = sub,username=username)
+    groups = groups
+    
+    with open('groups.csv', mode='r') as file:
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            group = (Group(row[0], row[1], row[2], row[3], row[4], row[5],(row[6]), row[7: ]))
+            group.member_names = group.member_names
+            if group.group_leader == username or username in str(group.member_names):
+                subject = group.subject
+                if subject not in sub:
+                    sub.append(subject)                 
+                    
+    
+    
+    return render_template("index_user.html",
+                           groups=groups,
+                           subjects = subjects,
+                           sub = sub,
+                           username=username)
 
 @app.route('/user/review', methods=['GET', 'POST'])
 def user_review():
