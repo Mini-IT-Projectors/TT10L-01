@@ -13,6 +13,7 @@ import pandas as pd
 app = Flask(__name__, static_folder='static')
 app.secret_key = 'cbjgdxgyjnges'
 
+#Call Out Student Data
 class Student:
     def __init__(self, username,password):
         self.username = username
@@ -31,7 +32,8 @@ def save_student():
                 student = (Student(row[0], row[1]))
                 students.append(student)
     return students
-                
+
+#Call Out Lecturer Data
 class Lecturer:
     def __init__(self, username,password):
         self.username = username
@@ -39,6 +41,7 @@ class Lecturer:
     
     def __repr__(self):
         return f'Lecturer({self.username}, {self.password})'
+
 
 def save_lecturers():
     global lecturers
@@ -50,6 +53,7 @@ def save_lecturers():
             lecturer = (Lecturer(row[0],row[1]))
             lecturers.append(lecturer)
 
+#Call Out Subject Data
 def save_subject():
     global subjects
     subjects = []
@@ -59,7 +63,8 @@ def save_subject():
         for row in reader:
             subjects.append(row[0])
     return subjects
-            
+
+#Call Out Lecturer Section Data    
 def lecturers_section():
     global lecturers_section
     lecturers_section = []
@@ -70,6 +75,7 @@ def lecturers_section():
             lecturers_section.append(row[0])
     return lecturers_section
             
+#Call Out Tutorial Section Data
 def tutorials_section():
     global tutorials_section
     tutorials_section = []
@@ -79,7 +85,8 @@ def tutorials_section():
         for row in reader:
             tutorials_section.append(row[0])
     return tutorials_section
-            
+
+#Call Out Lecturer Section and Subject Data
 def save_lecturer_subject():
     global lecturers_subject
     lecturers_subject = []
@@ -89,13 +96,35 @@ def save_lecturer_subject():
         for row in reader:
             lecturer_subject = (LecturerSection(row[0], row[1], row[2], row[3]))
             lecturers_subject.append(lecturer_subject)
-            
+
+#Call Out Student Groups Data
+def save_groups():
+    global groups
+    groups = []
+    with open('groups.csv', 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            next(reader)  # skip header row
+            for row in reader:
+                group = (Group(row[0], row[1], row[2], row[3], row[4], row[5],int(row[6]), row[7: ]))
+                groups.append(group)
+
+#Call Out Review Data
+def save_reviews():
+    global reviews
+    reviews = []
+    with open('reviews.csv', 'r', newline='') as csvfile:
+            reader = csv.reader(csvfile)
+            next(reader)  # skip header row
+            for row in reader:
+                review = (Review(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+                reviews.append(review)
+                
+#Lecturer Section Form
 class LecturerSectionForm(FlaskForm):
     def __init__(self, *args, **kwargs):
         super(LecturerSectionForm, self).__init__(*args, **kwargs)
         self.subject.choices = [(subject, subject) for subject in save_subject()]
 
-    
     lecturers_section()
     tutorials_section()
     subject = SelectField('Subject', validators=[DataRequired()])
@@ -117,16 +146,18 @@ class LecturerSection:
     def __repr__(self):
         return f'LecturerSection({self.username}, {self.subject}, {self.lecturer_section}, {self.tutorial_section})'
 
+#Registeration Form
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired()])
     submit = SubmitField('Register')
 
+#Create Group Form
 class GroupForm(FlaskForm):
     global lecturers,lecturers_section,tutorials_section,subjects
-    def __init__(self, *args, **kwargs):
-        super(GroupForm, self).__init__(*args, **kwargs)
+    def __init__(self):
+        super(GroupForm, self).__init__()
         self.subject.choices = [(subject, subject) for subject in save_subject()]
         self.group_leader.choices = [(student.username, student.username) for student in save_student()]
 
@@ -163,12 +194,18 @@ class Group:
     def __repr__(self):
         return f'Group({self.group_name}, {self.group_leader}, {self.subject}, {self.lecturer}, {self.lecturer_section}, {self.tutorial_section}, {self.number_of_members}, {self.member_names})'
 
+#Login Form
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
+#Review Form
 class ReviewForm(FlaskForm):
+    def __init__(self):
+        super(ReviewForm, self).__init__()
+        self.member_names_you_review.choices = [(student.username, student.username) for student in save_student()]
+
     subject = SelectField('Subject', choices=[
         (subject, subject) for subject in subjects
     ], validators=[DataRequired()])
@@ -182,19 +219,9 @@ class ReviewForm(FlaskForm):
     tutorial_section = SelectField('Tutorial Section', choices=[
         (tutorial_section, tutorial_section) for tutorial_section in tutorials_section
     ], validators=[DataRequired()])
-    member_names_you_review = StringField('Member Name', validators=[DataRequired()])
+    member_names_you_review = SelectField('Member Name', validators=[DataRequired()])
     review = StringField('Review', validators=[DataRequired()])
     submit = SubmitField('Send')
-
-if not os.path.exists('reviews.csv'):
-    with open('reviews.csv', 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(['Name', 'Group Name', 'Subject','Lecturer', 'Lecturer Section', 'Tutorial Section', 'Member Names You Review', 'Review'])  # header row
-
-def add_review_to_csv(username, review):
-    with open('reviews.csv', 'a', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow([username, review.group_name, review.subject, review.lecturer, review.lecturer_section, review.tutorial_section, review.member_names_you_review, review.review])
 
 class Review:
     def __init__(self, username, group_name, subject, lecturer, lecturer_section, tutorial_section, member_names_you_review, review):
@@ -209,6 +236,18 @@ class Review:
         
     def __repr__(self):
         return f'Review({self.username},{self.group_name}, {self.subject}, {self.lecturer}, {self.lecturer_section}, {self.tutorial_section} ,  {self.member_names_you_review}, {self.review})' 
+
+#Create Review Database
+if not os.path.exists('reviews.csv'):
+    with open('reviews.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['Name', 'Group Name', 'Subject','Lecturer', 'Lecturer Section', 'Tutorial Section', 'Member Names You Review', 'Review'])  # header row
+
+#Add Review to Student in Database
+def add_review_to_csv(username, review):
+    with open('reviews.csv', 'a', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([username, review.group_name, review.subject, review.lecturer, review.lecturer_section, review.tutorial_section, review.member_names_you_review, review.review])
 
 #Read Student Name    
 def check_user(username, password):
@@ -252,6 +291,7 @@ def check_lecturer(username) :
             if row['username'] == username:
                 return True
     return False
+
 #Read Group Name and Total Members
 def check_group(subject,group_name,member_name):
     if not os.path.exists('groups.csv'):
@@ -263,44 +303,26 @@ def check_group(subject,group_name,member_name):
                 return True
     return False
 
+#Add Student Data
 def add_user(username, password):
     with open('users.csv', mode='a', newline='') as file:
         fieldnames = ['username', 'password']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writerow({'username': username, 'password': password})
 
+#Add Lecturer Data
 def add_lecturer(username, password):
     with open('lecturer.csv', mode='a', newline='') as file:
         fieldnames = ['username', 'password']
         writer = csv.DictWriter(file, fieldnames=fieldnames)
         writer.writerow({'username': username,'password': password})
-        
-def save_groups():
-    global groups
-    groups = []
-    with open('groups.csv', 'r', newline='') as csvfile:
-            reader = csv.reader(csvfile)
-            next(reader)  # skip header row
-            for row in reader:
-                group = (Group(row[0], row[1], row[2], row[3], row[4], row[5],int(row[6]), row[7: ]))
-                groups.append(group)
 
-def save_reviews():
-    global reviews
-    reviews = []
-    with open('reviews.csv', 'r', newline='') as csvfile:
-            reader = csv.reader(csvfile)
-            next(reader)  # skip header row
-            for row in reader:
-                review = (Review(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
-                reviews.append(review)
-
-
-                
+#Home
 @app.route('/')
 def home():
     return render_template('home.html', title='Peer Review System')
 
+#Lecturer Interface
 @app.route('/register_user', methods=['GET', 'POST'])
 def register_user():
     form = RegisterForm()
@@ -339,67 +361,6 @@ def register_lecturer():
             flash('Username already exists. Please choose a different username.', 'danger')
 
     return render_template('register_lecturer.html', title='Register', form=form)
-
-@app.route('/user_login', methods=['GET', 'POST'])
-def login_user():
-    form = LoginForm()
-    if form.validate_on_submit():
-        username = form.username.data
-        password = form.password.data
-        if check_user(username, password):
-            flash('Login successful!', 'success')
-            session['username'] = username
-            return redirect(url_for('index_user'))
-        else:
-            flash('Invalid username or paword', 'danger')
-    return render_template('login_user.html', title='Student Login', form=form)
-
-@app.route('/user/home')
-def index_user(): 
-    global groups, subjects
-    sub = []
-    save_subject()
-    save_groups()
-    username = session.get('username')
-    groups = groups
-    
-    with open('groups.csv', mode='r') as file:
-        csv_reader = csv.reader(file)
-        for row in csv_reader:
-            group = (Group(row[0], row[1], row[2], row[3], row[4], row[5],(row[6]), row[7: ]))
-            group.member_names = group.member_names
-            if group.group_leader == username or username in str(group.member_names):
-                subject = group.subject
-                if subject not in sub:
-                    sub.append(subject)                 
-                    
-    
-    
-    return render_template("index_user.html",
-                           groups=groups,
-                           subjects = subjects,
-                           sub = sub,
-                           username=username)
-
-@app.route('/user/review', methods=['GET', 'POST'])
-def user_review():
-    form = ReviewForm()
-    review= None
-    username = session.get('username')
-    if form.validate_on_submit():
-        subject = form.subject.data
-        group_name = form.group_name.data
-        member_names_you_review = form.member_names_you_review.data
-        if check_group(subject,group_name,member_names_you_review):
-            flash('Login successful!', 'success')
-            
-        review = Review(username, form.group_name.data, form.subject.data, form.lecturer.data, form.lecturer_section.data, form.tutorial_section.data, form.member_names_you_review.data, form.review.data)
-        add_review_to_csv(username,review)
-        return redirect(url_for('user_review'))    
-    return render_template("review_user.html",
-                           username = username,
-                           form=form,
-                           review=review if review else {})
 
 @app.route('/lecturer_login', methods=['GET', 'POST'])
 def login_lecturer():
@@ -502,9 +463,7 @@ def add_subject():
         return redirect(url_for('add_subject'))
     return render_template("add_subject.html",form=form)
     
-    
 #Admin create group
-
 if not os.path.exists('groups.csv'):
     with open('groups.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -553,13 +512,69 @@ def delete_group(group_name,subject):
     except Exception as e:
         flash(f"Whoops! There was a problem deleting the group: {str(e)}")
     
-    return redirect(url_for('index_admin'))     
+    return redirect(url_for('index_admin'))
 
-# localhost:5000/user/john
-@app.route('/user/<name>')
+#Student Interface
+@app.route('/user_login', methods=['GET', 'POST'])
+def login_user():
+    form = LoginForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        if check_user(username, password):
+            flash('Login successful!', 'success')
+            session['username'] = username
+            return redirect(url_for('index_user'))
+        else:
+            flash('Invalid username or paword', 'danger')
+    return render_template('login_user.html', title='Student Login', form=form)
 
-def user(name):
-    return render_template("user.html", user_name=name)
+@app.route('/user/home')
+def index_user(): 
+    global groups, subjects
+    sub = []
+    save_subject()
+    save_groups()
+    username = session.get('username')
+    groups = groups
+    
+    with open('groups.csv', mode='r') as file:
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            group = (Group(row[0], row[1], row[2], row[3], row[4], row[5],(row[6]), row[7: ]))
+            group.member_names = group.member_names
+            if group.group_leader == username or username in str(group.member_names):
+                subject = group.subject
+                if subject not in sub:
+                    sub.append(subject)                 
+                    
+    
+    
+    return render_template("index_user.html",
+                           groups=groups,
+                           subjects = subjects,
+                           sub = sub,
+                           username=username)
+
+@app.route('/user/review', methods=['GET', 'POST'])
+def user_review():
+    form = ReviewForm()
+    review= None
+    username = session.get('username')
+    if form.validate_on_submit():
+        subject = form.subject.data
+        group_name = form.group_name.data
+        member_names_you_review = form.member_names_you_review.data
+        if check_group(subject,group_name,member_names_you_review):
+            flash('Review successful!', 'success')
+            
+        review = Review(username, form.group_name.data, form.subject.data, form.lecturer.data, form.lecturer_section.data, form.tutorial_section.data, form.member_names_you_review.data, form.review.data)
+        add_review_to_csv(username,review)
+        return redirect(url_for('user_review'))    
+    return render_template("review_user.html",
+                           username = username,
+                           form=form,
+                           review=review if review else {})
 
 #create custom error page
 
