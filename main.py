@@ -237,6 +237,17 @@ class Review:
     def __repr__(self):
         return f'Review({self.username},{self.group_name}, {self.subject}, {self.lecturer}, {self.lecturer_section}, {self.tutorial_section} ,  {self.member_names_you_review}, {self.review})' 
 
+#Add Lecturer Subject Form
+class LecturerSubjectForm(FlaskForm):
+    subject = StringField('Subject', validators=[DataRequired()])
+    submit = SubmitField('Add Subject')
+     
+class LecturerSubject:
+    def __init__(self,subject):
+        self.subject = subject
+    def __repr__(self):
+        return f'Review({self.subject})'
+    
 #Create Review Database
 if not os.path.exists('reviews.csv'):
     with open('reviews.csv', 'w', newline='') as csvfile:
@@ -435,16 +446,6 @@ def add_section():
                            username = username,
                            form=form,
                            lecturer=lecturer if lecturer else {})
-    
-class LecturerSubjectForm(FlaskForm):
-    subject = StringField('Subject', validators=[DataRequired()])
-    submit = SubmitField('Add Subject')
-     
-class LecturerSubject:
-    def __init__(self,subject):
-        self.subject = subject
-    def __repr__(self):
-        return f'Review({self.subject})'
  
 @app.route("/lecturer/add_subject", methods = ['GET','POST'])
 def add_subject():
@@ -499,13 +500,10 @@ def create_group():
 @app.route("/lecturer/delete_group_<string:group_name>_<string:subject>", methods=['GET', 'POST'])
 def delete_group(group_name,subject):
     try:
-        # Read the CSV file into a DataFrame
         df = pd.read_csv('groups.csv')
 
-        # Filter the DataFrame to exclude the row with the specified group_name and subject
         df_filtered = df[~((df['Group Name'] == group_name) & (df['Subject'] == subject))]
 
-        # Write the filtered DataFrame back to the CSV file
         df_filtered.to_csv('groups.csv', index=False)
 
         flash("Group deleted successfully")
@@ -547,8 +545,6 @@ def index_user():
                 subject = group.subject
                 if subject not in sub:
                     sub.append(subject)                 
-                    
-    
     
     return render_template("index_user.html",
                            groups=groups,
