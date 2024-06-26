@@ -333,7 +333,6 @@ def add_lecturer(username, password):
 def home():
     return render_template('home.html', title='Peer Review System')
 
-#Lecturer Interface
 @app.route('/register_user', methods=['GET', 'POST'])
 def register_user():
     form = RegisterForm()
@@ -524,7 +523,7 @@ def login_user():
             session['username'] = username
             return redirect(url_for('index_user'))
         else:
-            flash('Invalid username or paword', 'danger')
+            flash('Invalid username or password', 'danger')
     return render_template('login_user.html', title='Student Login', form=form)
 
 @app.route('/user/home')
