@@ -15,40 +15,20 @@
 </div>
 <div class="container"action="{{ url_for('index_user') }}" >
     <h1 class="username">WELCOME, {{ username }}!!</h1>
-    {{ sub }}
     <div class="container-subject">
+        {% for subject in sub %}
+        <h3> {{ subject }} </h3>
         <ul>
-            {% for one_subjects in subjects %}
-                {% for subject in sub %}
-                    {% if subject in one_subjects %}    
-                        <h3> {{ subject }} </h3>
-                            <ul>
-                            {% for group in groups %}
-                                {% if one_subjects in group.subject %}
-                                    <li>
-                                        {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Section: {{ group.lecturer_section }},{{ group.tutorial_section }} , Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }}) - <a href="{{url_for('delete_group', group_name=group.group_name, subject=subject)}}">Delete</a>
-                                    </li>
-                                {% endif %}
-                            {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-                {% endfor %}
+            {% for group in groups %}
+                {% if subject in group.subject %}
+                    <li>
+                        {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Section: {{ group.lecturer_section }},{{ group.tutorial_section }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
+                    </li>
+                {% endif %}
             {% endfor %}
         </ul>
+    {% endfor %}
     </div>
-    <div class="container-subject">
-        <h3>Mini IT Project</h3>
-        {% for group in groups %}
-            {% if group.subject in "Mini IT Project" and (username in group.group_leader or username in group.member_names) %}
-                <li class="group-list">
-                    {{ group.group_name }} (Leader: {{ group.group_leader }}, Lecturer: {{ group.lecturer }}, Number of Members: {{ group.number_of_members }}, Member Names: {{ group.member_names }})
-                    
-                </li>
-            {% endif %}
-        {% endfor %}
-    </div>
-    </br>
 </div>
 
 {% endblock %}
